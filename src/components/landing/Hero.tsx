@@ -6,6 +6,7 @@ import Image from "next/image";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
+import Link from "next/link";
 
 const slides = [
   { src: "/images/BelloFigo.jpg", alt: "Bello Figo" },
@@ -51,19 +52,13 @@ const Hero = () => {
 
               {/* Bottone per la lista */}
               <div className="relative z-10">
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  const listaSection = document.getElementById("lista");
-                  if (listaSection) {
-                    listaSection.scrollIntoView({ behavior: "smooth" });
-                  }
-                }}
-                className="mt-6 px-6 py-3 bg-red-500 text-white text-lg font-semibold rounded hover:bg-red-600 transition inline-block"
+              <Link 
+                href="/lista"
+                className="mt-6 px-6 py-3 bg-purple-600 text-white text-lg font-semibold rounded hover:bg-purple-800 transition inline-block"
               >
-                Inserisciti in lista
-              </a>
+                Mettiti in lista
+              </Link>
+
 
               </div>
             </div>

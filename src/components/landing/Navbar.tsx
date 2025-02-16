@@ -31,20 +31,20 @@ const Navbar = () => {
           <Link href="/">Home</Link>
         </li>
         <li className="hover:bg-[#c634ef] px-4 py-2 rounded">
-          <Link href="/events">Events</Link>
+          <Link href="/#events">Eventi</Link>
         </li>
         <li className="hover:bg-[#c634ef] px-4 py-2 rounded">
-          <Link href="/about">About</Link>
+          <Link href="/#about">About</Link>
         </li>
         <li className="hover:bg-[#c634ef] px-4 py-2 rounded">
-          <Link href="/contact">Contact</Link>
+          <Link href="/#contact">Contact</Link>
         </li>
       </ul>
 
       {/* LOGIN - TUTTO A DESTRA */}
       <div className="hidden md:flex">
         <Link
-          href="/login"
+          href="/auth/login"
           className="bg-[#c634ef] px-5 py-2 rounded flex items-center hover:bg-[#b125d4]"
         >
           <FaUser className="mr-2" />
@@ -82,21 +82,21 @@ const Navbar = () => {
           Home
         </Link>
         <Link
-          href="/events"
+          href="/#events"
           className="py-3 text-xl hover:bg-[#dd78fa] w-full text-center"
           onClick={() => setMenuOpen(false)}
         >
-          Events
+          Eventi
         </Link>
         <Link
-          href="/about"
+          href="/#about"
           className="py-3 text-xl hover:bg-[#dd78fa] w-full text-center"
           onClick={() => setMenuOpen(false)}
         >
           About
         </Link>
         <Link
-          href="/contact"
+          href="/#contact"
           className="py-3 text-xl hover:bg-[#dd78fa] w-full text-center"
           onClick={() => setMenuOpen(false)}
         >
@@ -105,7 +105,7 @@ const Navbar = () => {
 
         {/* LOGIN MOBILE */}
         <Link
-          href="/login"
+          href="/auth/login"
           className="mt-4 bg-[#c634ef] px-6 py-3 rounded flex items-center hover:bg-[#b125d4]"
           onClick={() => setMenuOpen(false)}
         >
