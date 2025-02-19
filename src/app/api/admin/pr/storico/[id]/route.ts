@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -6,17 +6,16 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-export async function GET(
-  req: Request,
-  context: { params: { id: string } } // Modifica qui, usa "context" per de-strutturare params
-) {
-  const { id: prId } = context.params; // De-strutturazione sicura
+export async function GET(req: NextRequest) {
+  // ✅ Estrai il PR ID dall'URL
+  const urlParts = req.nextUrl.pathname.split("/");
+  const prId = urlParts[urlParts.length - 1];
 
   if (!prId) {
     return NextResponse.json({ error: "ID PR non fornito" }, { status: 400 });
   }
 
-  // Recupera i dettagli del PR
+  // 🔍 Recupera i dettagli del PR
   const { data: pr, error: prError } = await supabase
     .from("pr")
     .select("id, nome, cognome")
@@ -27,7 +26,7 @@ export async function GET(
     return NextResponse.json({ error: "PR non trovato" }, { status: 404 });
   }
 
-  // Recupera lo storico degli eventi con JOIN sulla tabella eventi
+  // 🔍 Recupera lo storico degli eventi con JOIN sulla tabella eventi
   const { data: eventi, error: eventiError } = await supabase
     .from("lista")
     .select("evento_id, ingresso, eventi!inner(id, nome)")
@@ -38,7 +37,7 @@ export async function GET(
     return NextResponse.json({ error: eventiError.message }, { status: 400 });
   }
 
-  // Raggruppa gli ospiti per evento
+  // 🔄 Raggruppa gli ospiti per evento
   const eventoMap = new Map();
   eventi.forEach((evento) => {
     if (!eventoMap.has(evento.evento_id)) {
