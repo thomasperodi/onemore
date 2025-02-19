@@ -40,7 +40,7 @@ const Footer = () => {
       </div>
 
       <div className="mt-10 border-t border-gray-600 pt-4 text-sm text-gray-300 text-center">
-        &copy; 2025 EventOrg. All rights reserved.
+        &copy; 2025 OnemoreAndFam. All rights reserved.
       </div>
     </footer>
   );

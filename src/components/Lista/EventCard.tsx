@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Calendar, MapPin, Clock } from "lucide-react";
@@ -8,7 +10,6 @@ interface Event {
   locandina: string;
   nome: string;
   data: string;
-  orario_chiusura: string;
 }
 
 const EventCard = () => {
@@ -24,7 +25,7 @@ const EventCard = () => {
         if (data && data.length > 0) {
           const evento = data[0];
           setEvent(evento);
-          startCountdown(evento.orario_chiusura);
+          startCountdown(evento.data);
 
           // Memorizza l'ID dell'evento in localStorage
           localStorage.setItem("eventId", String(evento.id));
@@ -45,7 +46,7 @@ const EventCard = () => {
 
       if (distance <= 0) {
         clearInterval(interval);
-        setCountdown("Lista chiusa");
+        setCountdown("L'evento è iniziato");
         return;
       }
 

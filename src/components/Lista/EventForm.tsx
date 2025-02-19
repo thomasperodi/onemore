@@ -30,12 +30,12 @@ const EventForm = () => {
 
     if (urlPrId) {
       setPrId(urlPrId);
-      Cookies.set("pr_id", urlPrId, { expires: 7 }); 
+      Cookies.set("pr_id", urlPrId, { expires: 1 });
     } else {
       const storedPrId = Cookies.get("pr_id");
       if (storedPrId) setPrId(storedPrId);
       else {
-        Cookies.set("pr_id", "87e712bd-52a0-46b5-96be-ed708f8ed4ab", { expires: 1 }); // Se non c'è, imposta un valore predefinito
+        Cookies.set("pr_id", "87e712bd-52a0-46b5-96be-ed708f8ed4ab", { expires: 1 });
         setPrId("1");
       }
     }
@@ -46,18 +46,19 @@ const EventForm = () => {
       console.error("Nessun eventoId trovato in localStorage.");
     }
 
-    // Recupera la chiusura della lista dall'API
+    // 📌 Recupera i dati dell'evento e verifica se è iniziato
     const fetchEventData = async () => {
       try {
         const response = await fetch("/api/active-event");
         const data = await response.json();
 
         if (data && data.length > 0) {
-          const { orario_chiusura } = data[0];
-          const chiusura = new Date(orario_chiusura).getTime();
-
+          const { data: dataEvento } = data[0];
+          const eventoInizio = new Date(dataEvento).getTime();
           const now = new Date().getTime();
-          if (chiusura <= now) {
+
+          // 📌 Se l'evento è già iniziato, chiudiamo la lista
+          if (eventoInizio <= now) {
             setListaChiusa(true);
           }
         }

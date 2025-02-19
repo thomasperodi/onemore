@@ -1,8 +1,8 @@
 
 
 import AdminDashboardLayout from '@/components/Dashboard/Admin/DashboardLayout';
-import EventHistory from '@/components/Dashboard/Admin/EventHistory';
-import ListaCount from '@/components/Dashboard/Admin/ListaCount';
+
+import ListaOspiti from '@/components/Dashboard/Admin/Lista';
 
 const AdminDashboardComponent = () => {
   
@@ -11,10 +11,9 @@ const AdminDashboardComponent = () => {
     <main className="space-y-0">
       <AdminDashboardLayout>
         {/* Add any children components here if needed */}
-        <ListaCount />
+        <ListaOspiti />
         {/* Spazio prima del form */}
-      <div className="py-2" />
-        <EventHistory/>
+      
       </AdminDashboardLayout>
       
       

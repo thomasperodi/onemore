@@ -17,11 +17,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Nome, cognome ed eventoId sono obbligatori" }, { status: 400 });
     }
 
-    // Manipolazione dei dati
+    // 🛠️ Format nome e cognome
     const formatString = (str: string) => str.trim().toLowerCase().replace(/^(\w)/, (c: string) => c.toUpperCase());
     nome = formatString(nome);
     cognome = formatString(cognome);
 
+    // 🔍 Controlla se l'utente è già in lista
     const { data: existingUsers, error: checkError } = await supabase
       .from("lista")
       .select("id")
@@ -38,8 +39,26 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Utente già inserito in lista" }, { status: 409 });
     }
 
+    // 🕒 Determina il prezzo in base all'orario
+    const determinaPrezzo = (): number => {
+      const oraCorrente = new Date().getHours();
+      if (oraCorrente >= 18 && oraCorrente < 20) return 10;
+      if (oraCorrente >= 20 && oraCorrente < 22) return 12;
+      return 15;
+    };
+
+    const prezzoIngresso = determinaPrezzo();
+
+    // ⏳ Inserimento in lista con incasso calcolato
     const { error } = await supabase.from("lista").insert([
-      { evento_id: eventoId, pr_id: prId || null, nome_utente: nome, cognome_utente: cognome, ingresso: false, incasso: 0 }
+      { 
+        evento_id: eventoId, 
+        pr_id: prId || null, 
+        nome_utente: nome, 
+        cognome_utente: cognome, 
+        ingresso: false, 
+        incasso: prezzoIngresso 
+      }
     ]);
 
     if (error) {
@@ -47,7 +66,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Errore durante l'inserimento in lista" }, { status: 500 });
     }
 
-    return NextResponse.json({ message: "Registrazione completata con successo!" }, { status: 200 });
+    return NextResponse.json({ message: "Registrazione completata con successo!", incasso: prezzoIngresso }, { status: 200 });
   } catch (error) {
     console.error("Errore API:", error);
     return NextResponse.json({ error: "Errore interno del server" }, { status: 500 });
