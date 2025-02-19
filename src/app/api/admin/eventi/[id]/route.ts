@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -6,8 +6,10 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
-  const eventoId = parseInt(params.id, 10);
+export async function GET(req: NextRequest) {
+  // ✅ Estrai l'ID dall'URL
+  const urlParts = req.nextUrl.pathname.split("/");
+  const eventoId = parseInt(urlParts[urlParts.length - 1], 10);
 
   if (isNaN(eventoId)) {
     return NextResponse.json({ error: "ID evento non valido" }, { status: 400 });
