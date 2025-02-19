@@ -1,6 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
+// ✅ Definizione delle interfacce per Supabase
+interface PR {
+  id: string;
+  nome: string;
+  cognome: string;
+}
+
+// interface Evento {
+//   evento_id: number;
+//   ingresso: boolean;
+//   eventi?: { id: number; nome: string }[]; // ✅ Può essere un array
+// }
+
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -20,7 +33,7 @@ export async function GET(req: NextRequest) {
     .from("pr")
     .select("id, nome, cognome")
     .eq("id", prId)
-    .single();
+    .single<PR>();
 
   if (prError || !pr) {
     return NextResponse.json({ error: "PR non trovato" }, { status: 404 });
@@ -29,20 +42,29 @@ export async function GET(req: NextRequest) {
   // 🔍 Recupera lo storico degli eventi con JOIN sulla tabella eventi
   const { data: eventi, error: eventiError } = await supabase
     .from("lista")
-    .select("evento_id, ingresso, eventi!inner(id, nome)")
+    .select("evento_id, ingresso, eventi(id, nome)")
     .eq("pr_id", prId)
     .order("evento_id", { ascending: false });
 
+  // ✅ Controllo errori
   if (eventiError) {
     return NextResponse.json({ error: eventiError.message }, { status: 400 });
+  }
+
+  if (!eventi || !Array.isArray(eventi)) {
+    return NextResponse.json({ error: "Nessun evento trovato" }, { status: 404 });
   }
 
   // 🔄 Raggruppa gli ospiti per evento
   const eventoMap = new Map();
   eventi.forEach((evento) => {
+    const eventoNome = Array.isArray(evento.eventi) && evento.eventi.length > 0 
+      ? evento.eventi[0]?.nome 
+      : "Evento sconosciuto";
+
     if (!eventoMap.has(evento.evento_id)) {
       eventoMap.set(evento.evento_id, {
-        evento_nome: evento.eventi?.nome || "Evento sconosciuto",
+        evento_nome: eventoNome,
         ospiti_totali: 0,
         ospiti_entrati: 0,
       });
