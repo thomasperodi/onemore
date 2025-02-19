@@ -143,11 +143,11 @@ const GestionePR = () => {
       {error && <p className="text-red-500 text-center">{error}</p>}
 
       {/* Lista PR */}
-      <div className="mt-6">
+      <div className="mt-2">
         {filteredPRList.length === 0 ? (
           <p className="text-center text-gray-500">Nessun PR trovato.</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
           {paginatedPRList.map((pr) => (
             <div key={pr.id} className="bg-white p-2 rounded-xl shadow-md border border-gray-200 flex flex-col">
               <p className="text-xl font-bold text-gray-800">{pr.nome} {pr.cognome}</p>

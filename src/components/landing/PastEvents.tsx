@@ -85,7 +85,7 @@ const PastEvents: React.FC = () => {
           <div className="p-6 flex flex-col justify-between h-full">
             <div>
               <div className="text-sm text-gray-500">
-                {new Date(event.data).toLocaleDateString()} / {new Date(event.orario_chiusura).toLocaleTimeString()}
+                {new Date(event.data).toLocaleDateString()}
               </div>
               <h3 className="text-xl font-bold mt-4">{event.nome}</h3>
             </div>
