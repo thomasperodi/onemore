@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Trash2, PlusCircle, Search, Info, ChevronLeft, ChevronRight, Edit, Check, X } from "lucide-react";
+import { Trash2, PlusCircle, Search, Info, ChevronLeft, ChevronRight, Edit, Check, X, Key } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface PR {
@@ -22,8 +22,13 @@ const GestionePR = () => {
   const [editCognome, setEditCognome] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const itemsPerPage = 3;
   const router = useRouter();
+  const [editPassword, setEditPassword] = useState("");
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+
 
   useEffect(() => {
     fetchPRList();
@@ -53,6 +58,8 @@ const GestionePR = () => {
       fetchPRList();
       setNome("");
       setCognome("");
+      setSuccessMessage("PR aggiunto con successo ✅");
+      setTimeout(() => setSuccessMessage(null), 3000);
     } catch {
       setError("Errore durante l'aggiunta del PR");
     }
@@ -68,6 +75,8 @@ const GestionePR = () => {
       await axios.put("/api/admin/pr", { id, nome: formattedNome, cognome: formattedCognome });
       fetchPRList();
       setEditingId(null);
+      setSuccessMessage("PR modificato con successo ✏️");
+      setTimeout(() => setSuccessMessage(null), 5000);
     } catch {
       setError("Errore durante la modifica del PR");
     }
@@ -77,12 +86,29 @@ const GestionePR = () => {
     setEditingId(pr.id);
     setEditNome(pr.nome);
     setEditCognome(pr.cognome);
+    setEditPassword(""); // reset password edit field
   };
-
+  
+  const handleChangePassword = async (id: string) => {
+    if (!editPassword.trim()) return;
+  
+    try {
+      await axios.put("/api/admin/pr/password", { prId: id, nuovaPassword: editPassword });
+      setEditingId(null);
+      setEditPassword("");
+    } catch {
+      setError("Errore durante la modifica della password");
+    }
+  };
+  
   const handleDeletePR = async (id: string) => {
     try {
       await axios.delete("/api/admin/pr", { data: { id } });
       fetchPRList();
+      setConfirmDeleteId(null);
+      setCurrentPage(1);
+      setSuccessMessage("PR eliminato con successo 🗑️");
+      setTimeout(() => setSuccessMessage(null), 5000);
     } catch {
       setError("Errore durante l'eliminazione del PR");
     }
@@ -106,6 +132,12 @@ const GestionePR = () => {
   return (
     <div className="bg-white shadow-lg rounded-xl p-6 w-full max-w-4xl mx-auto">
       <h3 className="text-xl font-semibold text-gray-700 mb-4 text-center">Gestione PR</h3>
+      {successMessage && (
+  <div className="bg-green-100 text-green-800 border border-green-300 rounded-lg p-3 mb-4 text-center font-medium">
+    {successMessage}
+  </div>
+)}
+
 
       {/* Barra di ricerca */}
       <div className="relative mb-4">
@@ -135,9 +167,13 @@ const GestionePR = () => {
           value={cognome}
           onChange={(e) => setCognome(e.target.value)}
         />
+        
+
         <button onClick={handleAddPR} className="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center justify-center">
           <PlusCircle size={20} />
         </button>
+        
+
       </div>
 
       {error && <p className="text-red-500 text-center">{error}</p>}
@@ -165,12 +201,28 @@ const GestionePR = () => {
                   <Edit size={20} />
                 </button>
                 <button
-                  onClick={() => handleDeletePR(pr.id)}
-                  className="p-2 text-red-600 hover:text-red-800 transition-all">
-                  <Trash2 size={20} />
+                    onClick={() => setConfirmDeleteId(pr.id)}
+                    className="p-2 text-red-600 hover:text-red-800 transition-all">
+                    <Trash2 size={20} />
                 </button>
               </div>
-              
+              {confirmDeleteId === pr.id && (
+                  <div className="mt-4 p-3 bg-red-100 border border-red-300 rounded-lg shadow-md flex flex-col items-center">
+                    <p className="text-red-700 font-semibold">Sei sicuro di voler eliminare {pr.nome} {pr.cognome}?</p>
+                    <div className="flex gap-3 mt-3">
+                      <button
+                        onClick={() => handleDeletePR(pr.id)}
+                        className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all">
+                        <Check size={20} /> Conferma
+                      </button>
+                      <button
+                        onClick={() => setConfirmDeleteId(null)}
+                        className="p-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all">
+                        <X size={20} /> Annulla
+                      </button>
+                    </div>
+                  </div>
+                )}
               {editingId === pr.id && (
                 <div className="mt-4 p-3 bg-gray-100 rounded-lg shadow-inner">
                   <input
@@ -187,11 +239,23 @@ const GestionePR = () => {
                     value={editCognome}
                     onChange={(e) => setEditCognome(e.target.value)}
                   />
+                  <input
+                  type="password"
+                  className="w-full p-2 border border-gray-300 rounded-lg mb-2 focus:ring focus:ring-blue-300"
+                  placeholder="Nuova password (opzionale)"
+                  value={editPassword}
+                  onChange={(e) => setEditPassword(e.target.value)}
+                />
                   <div className="flex justify-end space-x-2">
                     <button
                       onClick={() => handleUpdatePR(pr.id)}
                       className="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all">
                       <Check size={20} />
+                    </button>
+                    <button
+                      onClick={() => handleChangePassword(pr.id)}
+                      className="p-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-all">
+                      <Key size={20} />
                     </button>
                     <button
                       onClick={() => setEditingId(null)}

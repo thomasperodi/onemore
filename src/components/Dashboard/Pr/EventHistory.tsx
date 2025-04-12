@@ -1,5 +1,8 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 interface Event {
   id: number;
@@ -8,45 +11,73 @@ interface Event {
   data: string;
 }
 
+interface TokenPayload {
+  pr_id: number;
+  // altri campi opzionali se presenti nel tuo JWT
+}
+
 const EventHistory = () => {
   const [eventi, setEventi] = useState<Event[]>([]);
-  
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    // Simulazione dati statici
-    const simulatedData: Event[] = [
-      { id: 1, nomeEvento: "Evento A", numeroNomi: 20, data: "2024-02-01" },
-      { id: 2, nomeEvento: "Evento B", numeroNomi: 35, data: "2024-02-02" },
-      { id: 3, nomeEvento: "Evento C", numeroNomi: 50, data: "2024-02-03" },
-      { id: 4, nomeEvento: "Evento D", numeroNomi: 15, data: "2024-02-04" },
-      { id: 5, nomeEvento: "Evento E", numeroNomi: 40, data: "2024-02-05" },
-      { id: 6, nomeEvento: "Evento F", numeroNomi: 25, data: "2024-02-06" },
-      { id: 7, nomeEvento: "Evento G", numeroNomi: 30, data: "2024-02-07" },
-      { id: 8, nomeEvento: "Evento H", numeroNomi: 45, data: "2024-02-08" },
-      { id: 9, nomeEvento: "Evento I", numeroNomi: 55, data: "2024-02-09" },
-      { id: 10, nomeEvento: "Evento J", numeroNomi: 60, data: "2024-02-10" }
-    ];
-    
-    // Ordinare gli eventi dal più recente al più vecchio
-    const sortedData = simulatedData.sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
-    setEventi(sortedData);
+    const getPrIdFromCookie = () => {
+      const cookie = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("token="));
+      if (!cookie) return null;
+
+      const token = cookie.split("=")[1];
+      try {
+        const decoded = jwtDecode<TokenPayload>(token);
+        return decoded.pr_id;
+      } catch (err) {
+        console.error("Errore nella decodifica del token:", err);
+        return null;
+      }
+    };
+
+    const fetchEventi = async () => {
+      const pr_id = getPrIdFromCookie();
+      if (!pr_id) {
+        console.warn("⚠️ PR ID non trovato nel token.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await axios.get(`/api/pr/storico?pr_id=${pr_id}`);
+        setEventi(response.data);
+      } catch (error) {
+        console.error("Errore nel caricamento degli eventi:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEventi();
   }, []);
 
   return (
     <div className="bg-white p-6 shadow-lg rounded-lg w-full md:w-96 max-h-80 overflow-y-auto mt-6 md:mt-0">
       <h2 className="text-xl font-bold mb-4 text-center">Storico Eventi</h2>
-      <ul className="space-y-3">
-        {eventi.length > 0 ? (
-          eventi.map((evento) => (
-            <li key={evento.id} className="p-4 border-b last:border-none bg-gray-100 rounded-lg shadow-sm">
-              <p className="text-lg font-semibold text-gray-800">{evento.nomeEvento}</p>
-              <p className="text-md text-gray-700">Nomi registrati: <span className="font-bold">{evento.numeroNomi}</span></p>
-              <p className="text-md text-gray-600">Data: {new Date(evento.data).toLocaleDateString()}</p>
-            </li>
-          ))
-        ) : (
-          <p className="text-md text-gray-500 text-center">Nessun evento registrato.</p>
-        )}
-      </ul>
+      {loading ? (
+        <p className="text-center text-gray-500">Caricamento...</p>
+      ) : (
+        <ul className="space-y-3">
+          {eventi.length > 0 ? (
+            eventi.map((evento) => (
+              <li key={evento.id} className="p-4 border-b last:border-none bg-gray-100 rounded-lg shadow-sm">
+                <p className="text-lg font-semibold text-gray-800">{evento.nomeEvento}</p>
+                <p className="text-md text-gray-700">Nomi registrati: <span className="font-bold">{evento.numeroNomi}</span></p>
+                <p className="text-md text-gray-600">Data: {new Date(evento.data).toLocaleDateString()}</p>
+              </li>
+            ))
+          ) : (
+            <p className="text-md text-gray-500 text-center">Nessun evento registrato.</p>
+          )}
+        </ul>
+      )}
     </div>
   );
 };

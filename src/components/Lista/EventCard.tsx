@@ -4,10 +4,12 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Calendar, MapPin, Clock } from "lucide-react";
 import EventForm from "./EventForm";
+import LinkGoogleMaps from "./EventMap";
 
 interface Event {
   id: number;
   locandina: string;
+  indirizzo: string;
   nome: string;
   data: string;
 }
@@ -89,7 +91,7 @@ const EventCard = () => {
         </div>
         <div className="flex items-center gap-2 mb-4">
           <MapPin className="w-6 h-6" />
-          <span className="text-lg">Cala More</span>
+          <LinkGoogleMaps indirizzo={event.indirizzo} />
         </div>
         <div className="text-2xl font-bold text-yellow-400 mb-6 text-center md:text-left">
           Countdown: {countdown}

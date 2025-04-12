@@ -9,6 +9,7 @@ import {
   getPaginationRowModel,
 } from "@tanstack/react-table";
 import { FaSortUp, FaSortDown } from "react-icons/fa";
+import { CheckCircle, XCircle } from "lucide-react";
 
 interface CustomJwtPayload extends JwtPayload {
   pr_id?: string;
@@ -83,7 +84,13 @@ const PRListTable = () => {
     {
       accessorKey: "ingresso",
       header: "Ingresso",
-      cell: ({ getValue }: { getValue: () => boolean }) => (getValue() ? "✔" : "✖"),
+      cell: ({ getValue }: { getValue: () => boolean }) => (
+        getValue() ? (
+          <CheckCircle className="text-green-500" size={20} />
+        ) : (
+          <XCircle className="text-red-500" size={20} />
+        )
+      ),
     },
   ];
 

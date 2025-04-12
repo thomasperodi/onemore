@@ -10,20 +10,16 @@ const EventForm = () => {
   const [prId, setPrId] = useState<string | null>(null);
   const [listaChiusa, setListaChiusa] = useState<boolean>(false);
   const [eventoId, setEventoId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
   const searchParams = useSearchParams();
 
-  // Gestisce i campi di input
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Gestisce la checkbox per la privacy
-  const handleCheckboxChange = () => {
-    setConsenso(!consenso);
-  };
+  const handleCheckboxChange = () => setConsenso(!consenso);
 
-  // Recupera il PR ID, eventoId e verifica chiusura lista
   useEffect(() => {
     const urlPrId = searchParams.get("pr_id");
     const storedEventoId = localStorage.getItem("eventId");
@@ -34,10 +30,6 @@ const EventForm = () => {
     } else {
       const storedPrId = Cookies.get("pr_id");
       if (storedPrId) setPrId(storedPrId);
-      else {
-        Cookies.set("pr_id", "87e712bd-52a0-46b5-96be-ed708f8ed4ab", { expires: 1 });
-        setPrId("1");
-      }
     }
 
     if (storedEventoId) {
@@ -46,19 +38,14 @@ const EventForm = () => {
       console.error("Nessun eventoId trovato in localStorage.");
     }
 
-    // 📌 Recupera i dati dell'evento e verifica se è iniziato
     const fetchEventData = async () => {
       try {
         const response = await fetch("/api/active-event");
         const data = await response.json();
 
-        if (data && data.length > 0) {
-          const { data: dataEvento } = data[0];
-          const eventoInizio = new Date(dataEvento).getTime();
-          const now = new Date().getTime();
-
-          // 📌 Se l'evento è già iniziato, chiudiamo la lista
-          if (eventoInizio <= now) {
+        if (data?.length > 0) {
+          const eventoInizio = new Date(data[0].data).getTime();
+          if (eventoInizio <= Date.now()) {
             setListaChiusa(true);
           }
         }
@@ -70,59 +57,53 @@ const EventForm = () => {
     fetchEventData();
   }, [searchParams]);
 
-  // Gestisce l'invio del form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setMessage(null);
 
-    if (listaChiusa) {
-      alert("La lista è chiusa, non puoi più registrarti.");
-      return;
-    }
+    if (listaChiusa) return setMessage({ text: "La lista è chiusa, non puoi più registrarti.", type: "error" });
+    if (!consenso) return setMessage({ text: "Devi accettare il trattamento dei dati personali.", type: "error" });
+    if (!prId) return setMessage({ text: "Errore: nessun PR di riferimento trovato.", type: "error" });
+    if (!eventoId) return setMessage({ text: "Errore: nessun ID evento trovato.", type: "error" });
 
-    if (!consenso) {
-      alert("Devi accettare il trattamento dei dati personali.");
-      return;
-    }
-
-    if (!prId) {
-      alert("Errore: nessun PR di riferimento trovato.");
-      return;
-    }
-
-    if (!eventoId) {
-      alert("Errore: nessun ID evento trovato.");
-      return;
-    }
-
-    const payload = {
-      nome: formData.nome,
-      cognome: formData.cognome,
-      prId,
-      eventoId,
-    };
+    setLoading(true);
 
     try {
       const response = await fetch("/api/join-list", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ ...formData, prId, eventoId }),
       });
 
       if (response.ok) {
-        alert("Registrazione completata con successo!");
+        setMessage({ text: "Ti sei inserito in lista correttamente!", type: "success" });
         setFormData({ nome: "", cognome: "" });
         setConsenso(false);
-      } else {
-        alert("Errore durante la registrazione. Riprova.");
+      } else if(response.status === 409) {
+        setMessage({ text:"Nome già in lista.", type: "error" });
       }
-    } catch (error) {
-      console.error("Errore durante l'invio:", error);
-      alert("Si è verificato un errore imprevisto. Riprova più tardi.");
+      else {
+        setMessage({ text: "Errore durante la registrazione", type: "error" });
+      }
+    } catch {
+      setMessage({ text: "Si è verificato un errore imprevisto. Riprova più tardi.", type: "error" });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {message && (
+        <div
+          className={`p-3 text-white rounded-lg ${
+            message.type === "success" ? "bg-green-500" : "bg-red-500"
+          }`}
+        >
+          {message.text}
+        </div>
+      )}
+
       <input
         type="text"
         name="nome"
@@ -131,7 +112,7 @@ const EventForm = () => {
         placeholder="Nome"
         required
         className="w-full p-3 rounded-lg text-black text-lg"
-        disabled={listaChiusa}
+        disabled={listaChiusa || loading}
       />
       <input
         type="text"
@@ -141,7 +122,7 @@ const EventForm = () => {
         placeholder="Cognome"
         required
         className="w-full p-3 rounded-lg text-black text-lg"
-        disabled={listaChiusa}
+        disabled={listaChiusa || loading}
       />
       <div className="flex items-center gap-2">
         <input
@@ -150,7 +131,7 @@ const EventForm = () => {
           checked={consenso}
           onChange={handleCheckboxChange}
           className="w-5 h-5"
-          disabled={listaChiusa}
+          disabled={listaChiusa || loading}
         />
         <label htmlFor="consenso" className="text-sm">
           Accetto il trattamento dei dati personali
@@ -159,12 +140,18 @@ const EventForm = () => {
 
       <button
         type="submit"
-        className={`w-full ${
+        className={`w-full flex justify-center items-center gap-2 ${
           listaChiusa ? "bg-gray-500" : "bg-pink-600 hover:bg-pink-700"
         } text-white py-3 rounded-lg text-lg shadow-md transition duration-300`}
-        disabled={listaChiusa}
+        disabled={listaChiusa || loading}
       >
-        {listaChiusa ? "Lista Chiusa" : "Inserisciti in Lista"}
+        {loading ? (
+          <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></span>
+        ) : listaChiusa ? (
+          "Lista Chiusa"
+        ) : (
+          "Inserisciti in Lista"
+        )}
       </button>
     </form>
   );

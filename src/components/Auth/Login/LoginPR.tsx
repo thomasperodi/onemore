@@ -2,17 +2,24 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Eye, EyeOff } from 'lucide-react';
-import { useRouter } from 'next/navigation';  // Importa il router di Next.js
+import { useRouter } from 'next/navigation';
+
 export const LoginPR = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const router = useRouter();  // Inizializza il router
+  const [attempts, setAttempts] = useState(0);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
+
+    if (attempts >= 3) {
+      setError("Troppi tentativi. Attendi qualche secondo prima di riprovare.");
+      return;
+    }
 
     try {
       const res = await fetch('/api/auth/login', {
@@ -24,13 +31,15 @@ export const LoginPR = () => {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error);
+        setError("Username o password errati. Riprova o reimposta la password.");
+        setAttempts(attempts + 1);
         return;
       }
+
       const dashboardPath = data.role === 'admin' ? '/admin/dashboard' : '/pr/dashboard';
-      router.push(dashboardPath);  // Reindirizza alla dashboard corretta
+      router.push(dashboardPath);
     } catch {
-      setError('Errore di connessione.');
+      setError("Errore di connessione. Controlla la tua rete e riprova.");
     }
   };
 
@@ -41,12 +50,19 @@ export const LoginPR = () => {
           Accedi come PR
         </h2>
         <form className="space-y-5" onSubmit={handleSubmit}>
-          <input type="text" placeholder="Username" className="w-full p-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-4 focus:ring-violet-500 transition" value={username} onChange={(e) => setUsername(e.target.value)} required />
+          <input
+            type="text"
+            placeholder="Username"
+            className={`w-full p-4 rounded-lg border ${error ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-4 focus:ring-violet-500 transition`}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
           <div className="relative w-full">
             <input 
               type={showPassword ? "text" : "password"} 
               placeholder="Password" 
-              className="w-full p-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-4 focus:ring-violet-500 transition" 
+              className={`w-full p-4 rounded-lg border ${error ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-4 focus:ring-violet-500 transition`} 
               value={password} 
               onChange={(e) => setPassword(e.target.value)} 
               required 
@@ -55,8 +71,21 @@ export const LoginPR = () => {
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
-          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-          <button type="submit" className="w-full bg-gradient-to-r from-violet-600 to-violet-800 text-white py-3 rounded-lg hover:scale-105 transition duration-300 shadow-lg">
+          {error && <p className="text-red-500 text-sm text-center animate-shake">{error}</p>}
+          {error && (
+            <div className="text-center">
+              <Link href="/auth/reset-password" className="text-violet-600 hover:underline text-sm">
+                Hai dimenticato la password?
+              </Link>
+            </div>
+          )}
+          <button
+            type="submit"
+            className={`w-full ${
+              attempts >= 3 ? "bg-gray-500 cursor-not-allowed" : "bg-gradient-to-r from-violet-600 to-violet-800 hover:scale-105"
+            } text-white py-3 rounded-lg transition duration-300 shadow-lg`}
+            disabled={attempts >= 3}
+          >
             Accedi
           </button>
         </form>
