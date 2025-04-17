@@ -31,7 +31,10 @@ const pricingRules = [
 
 function calcolaPrezzo(orario: string): number {
   try {
-    const timePart = orario.split("T")[1]?.slice(0, 5); // "HH:MM"
+    // Supporta sia "2025-04-17T20:00:00" che "2025-04-17 20:00:00"
+    const parts = orario.includes("T") ? orario.split("T") : orario.split(" ");
+    const timePart = parts[1]?.slice(0, 5); // "HH:MM"
+
     if (!timePart) return pricingRules.at(-1)?.prezzo ?? 15;
 
     const [oraIngresso, minutoIngresso] = timePart.split(":").map(Number);
@@ -44,10 +47,12 @@ function calcolaPrezzo(orario: string): number {
     }
 
     return pricingRules.at(-1)?.prezzo ?? 15;
-  } catch {
+  } catch (error) {
+    console.error("Errore calcolo prezzo:", error);
     return pricingRules.at(-1)?.prezzo ?? 15;
   }
 }
+
 
 // ✅ PATCH: aggiorna ingresso, orario e incasso
 export async function PATCH(req: Request) {
