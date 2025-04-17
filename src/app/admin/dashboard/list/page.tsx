@@ -1,5 +1,6 @@
 
 
+import ContatoriOspiti from '@/components/Dashboard/Admin/ContatoriOspiti';
 import AdminDashboardLayout from '@/components/Dashboard/Admin/DashboardLayout';
 
 import ListaOspiti from '@/components/Dashboard/Admin/Lista';
@@ -11,6 +12,7 @@ const AdminDashboardComponent = () => {
     <main className="space-y-0">
       <AdminDashboardLayout>
         {/* Add any children components here if needed */}
+        <ContatoriOspiti/>
         <ListaOspiti />
         {/* Spazio prima del form */}
       

@@ -24,31 +24,41 @@ const ListaOspiti = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [nome_evento, setNome_evento] = useState<string>("");
+  const [id_evento_attivo, setId_evento_attivo] = useState<number | null>(null);
+
+  const fetchEventoAttivo = async () => {
+    try {
+      const res = await fetch("/api/active-event");
+      const data = await res.json();
+      setNome_evento(data[0].nome);
+      setId_evento_attivo(data[0].id);
+    } catch (error) {
+      console.error("Errore nel recupero dei dati evento attivo:", error);
+    }
+  };
+
+  const fetchListaOspiti = async (eventoId: number) => {
+    try {
+      const response = await axios.get("/api/admin/lista");
+      const listaFiltrata = response.data.filter((o: Ospite) => o.evento_id === eventoId);
+      setOspiti(listaFiltrata);
+    } catch {
+      setError("Errore nel recupero della lista ospiti");
+    }
+  };
 
   useEffect(() => {
-    const fetchListaOspiti = async () => {
-      try {
-        const response = await axios.get("/api/admin/lista");
-        setOspiti(response.data);
-      } catch {
-        setError("Errore nel recupero della lista ospiti");
-      }
+    const init = async () => {
+      await fetchEventoAttivo();
     };
-    const GetNameEvent = async () => {
-        try {
-          const res = await fetch("/api/active-event");
-          const data = await res.json();
-          setNome_evento(data[0].nome);
-        } catch (error) {
-          console.error("Errore nel recupero dei dati:", error);
-        }
-      };
-
-    fetchListaOspiti();
-    GetNameEvent(); 
+    init();
   }, []);
 
-  
+  useEffect(() => {
+    if (id_evento_attivo !== null) {
+      fetchListaOspiti(id_evento_attivo);
+    }
+  }, [id_evento_attivo]);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -57,7 +67,6 @@ const ListaOspiti = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Ripristina la prima pagina quando si effettua una ricerca
   useEffect(() => {
     setCurrentPage(0);
   }, [search]);
@@ -73,9 +82,9 @@ const ListaOspiti = () => {
   const handleCheckIn = async (id: number, ingresso: boolean) => {
     try {
       const timestamp = ingresso ? null : new Date().toLocaleString("sv-SE", { timeZone: "Europe/Rome" });
-  
+
       await axios.patch("/api/admin/lista", { id, ingresso: !ingresso, orario_ingresso: timestamp });
-  
+
       setOspiti((prev) =>
         prev.map((o) =>
           o.id === id ? { ...o, ingresso: !ingresso, orario_ingresso: timestamp } : o
@@ -85,57 +94,55 @@ const ListaOspiti = () => {
       setError("Errore durante l'aggiornamento dello stato di ingresso");
     }
   };
-  
 
   return (
-    <div className="bg-white shadow-lg rounded-xl p-4 w-full max-w-6xl mx-auto">
-      <h3 className="text-xl font-semibold text-gray-700 mb-4">Lista - {nome_evento}</h3>
+    <div className="bg-white shadow rounded-lg p-3 w-full max-w-6xl mx-auto mt-2">
+      <h3 className="text-lg font-semibold text-gray-700 mb-2">Lista - {nome_evento}</h3>
 
-      {/* Barra di ricerca */}
-      <div className="relative mb-4">
+      <div className="relative mb-2">
         <input
           type="text"
-          className="w-full p-3 border border-gray-300 rounded-lg pl-10 focus:ring focus:ring-blue-200"
-          placeholder="Cerca per nome o cognome..."
+          className="w-full p-2 text-sm border border-gray-300 rounded pl-9 focus:ring focus:ring-blue-200"
+          placeholder="Cerca ospite..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
       </div>
 
       {error ? (
         <p className="text-red-500 text-sm">{error}</p>
       ) : (
         <>
-          {/* Desktop: Tabella con scroll */}
-          <div className="hidden md:block overflow-x-auto max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-            <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+          {/* Desktop */}
+          <div className="hidden md:block overflow-x-auto max-h-[320px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+            <table className="min-w-full bg-white border border-gray-200 text-sm">
               <thead className="bg-blue-600 text-white">
                 <tr>
-                  <th className="p-3 text-left">ID</th>
-                  <th className="p-3 text-left">Nome</th>
-                  <th className="p-3 text-left">Cognome</th>
-                  <th className="p-3 text-left">PR</th>
-                  <th className="p-3 text-left">Ingresso</th>
-                  <th className="p-3 text-left">Azione</th>
+                  <th className="p-2 text-left">ID</th>
+                  <th className="p-2 text-left">Nome</th>
+                  <th className="p-2 text-left">Cognome</th>
+                  <th className="p-2 text-left">PR</th>
+                  <th className="p-2 text-left">Ingresso</th>
+                  <th className="p-2 text-left">Azione</th>
                 </tr>
               </thead>
               <tbody>
                 {paginatedOspiti.map((ospite, index) => (
                   <tr key={ospite.id} className={`border-t ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}>
-                    <td className="p-3">{ospite.id}</td>
-                    <td className="p-3">{ospite.nome_utente}</td>
-                    <td className="p-3">{ospite.cognome_utente}</td>
-                    <td className="p-3">{ospite.pr ? `${ospite.pr.nome} ${ospite.pr.cognome}` : "N/A"}</td>
-                    <td className="p-3">{ospite.ingresso ? "Entrato" : "Non entrato"}</td>
-                    <td className="p-3">
+                    <td className="p-2">{ospite.id}</td>
+                    <td className="p-2">{ospite.nome_utente}</td>
+                    <td className="p-2">{ospite.cognome_utente}</td>
+                    <td className="p-2">{ospite.pr ? `${ospite.pr.nome} ${ospite.pr.cognome}` : "N/A"}</td>
+                    <td className="p-2">{ospite.ingresso ? "Entrato" : "Non entrato"}</td>
+                    <td className="p-2">
                       <button
                         onClick={() => handleCheckIn(ospite.id, ospite.ingresso)}
-                        className={`p-2 text-white rounded-lg transition ${
+                        className={`p-1 text-white rounded transition ${
                           ospite.ingresso ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"
                         }`}
                       >
-                        {ospite.ingresso ? <XCircle size={18} /> : <CheckCircle size={18} />}
+                        {ospite.ingresso ? <XCircle size={16} /> : <CheckCircle size={16} />}
                       </button>
                     </td>
                   </tr>
@@ -144,24 +151,24 @@ const ListaOspiti = () => {
             </table>
           </div>
 
-          {/* Mobile: Schede compatte */}
-          <div className="md:hidden flex flex-col gap-3">
+          {/* Mobile */}
+          <div className="md:hidden flex flex-col gap-2">
             {paginatedOspiti.map((ospite) => (
-              <div key={ospite.id} className="p-3 bg-gray-50 rounded-lg shadow-md border border-gray-200 flex justify-between items-center">
-                <div className="flex flex-col">
-                  <h4 className="text-md font-bold text-gray-800">{ospite.nome_utente} {ospite.cognome_utente}</h4>
+              <div key={ospite.id} className="p-2 bg-gray-50 rounded shadow border border-gray-200 flex justify-between items-center">
+                <div className="flex flex-col text-sm">
+                  <h4 className="font-bold text-gray-800">{ospite.nome_utente} {ospite.cognome_utente}</h4>
                   <span className="text-xs text-gray-500">{ospite.pr ? `PR: ${ospite.pr.nome} ${ospite.pr.cognome}` : "N/A"}</span>
-                  <span className={`text-sm font-semibold ${ospite.ingresso ? "text-green-600" : "text-red-600"}`}>
+                  <span className={`font-semibold ${ospite.ingresso ? "text-green-600" : "text-red-600"}`}>
                     {ospite.ingresso ? "Entrato" : "Non entrato"}
                   </span>
                 </div>
                 <button
                   onClick={() => handleCheckIn(ospite.id, ospite.ingresso)}
-                  className={`p-2 text-white rounded-lg transition ${
+                  className={`p-1 text-white rounded transition ${
                     ospite.ingresso ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"
                   }`}
                 >
-                  {ospite.ingresso ? <XCircle size={18} /> : <CheckCircle size={18} />}
+                  {ospite.ingresso ? <XCircle size={16} /> : <CheckCircle size={16} />}
                 </button>
               </div>
             ))}
@@ -169,21 +176,21 @@ const ListaOspiti = () => {
 
           {/* Paginazione */}
           {totalPages > 1 && (
-            <div className="flex justify-between items-center mt-4">
+            <div className="flex justify-between items-center mt-2 text-sm">
               <button
                 disabled={currentPage === 0}
                 onClick={() => setCurrentPage(currentPage - 1)}
-                className="p-2 bg-gray-300 rounded-lg disabled:opacity-50"
+                className="p-1 bg-gray-300 rounded disabled:opacity-50"
               >
-                <ChevronLeft />
+                <ChevronLeft size={18} />
               </button>
               <span className="text-gray-700">Pagina {currentPage + 1} di {totalPages}</span>
               <button
                 disabled={currentPage === totalPages - 1}
                 onClick={() => setCurrentPage(currentPage + 1)}
-                className="p-2 bg-gray-300 rounded-lg disabled:opacity-50"
+                className="p-1 bg-gray-300 rounded disabled:opacity-50"
               >
-                <ChevronRight />
+                <ChevronRight size={18} />
               </button>
             </div>
           )}

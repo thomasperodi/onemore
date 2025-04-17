@@ -21,7 +21,6 @@ const GestioneEventi = () => {
       setError("Compila tutti i campi.");
       return;
     }
-    
 
     try {
       setLoading(true);
@@ -42,16 +41,14 @@ const GestioneEventi = () => {
         locandina: locandinaUrl,
         indirizzo: indirizzo.trim(),
       });
-      
+
       setSuccess("Evento aggiunto con successo 🎉");
       setNome("");
       setData("");
       setIndirizzo("");
       setLocandina(null);
-      
-      // ⏱️ Nasconde il messaggio dopo 5 secondi
+
       setTimeout(() => setSuccess(null), 5000);
-      
     } catch {
       setError("Errore durante l'aggiunta dell'evento. Riprova.");
     } finally {
@@ -60,55 +57,56 @@ const GestioneEventi = () => {
   };
 
   return (
-    <div className="bg-white shadow-lg rounded-xl p-3 w-full max-w-6xl mx-auto transition-all">
-      <h3 className="text-xl font-semibold text-gray-700 mb-2 text-center">Gestione Eventi</h3>
+    <div className="bg-white shadow-md rounded-lg p-2 w-full max-w-6xl mx-auto mb-4">
+      <h3 className="text-lg font-semibold text-gray-700 mb-2 text-center">Aggiungi Evento</h3>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
         <input
           type="text"
-          className="p-3 border rounded-lg w-full"
-          placeholder="Nome"
+          className="p-2 border text-sm rounded w-full"
+          placeholder="Nome evento"
           value={nome}
           onChange={(e) => setNome(e.target.value)}
         />
         <input
           type="datetime-local"
-          className="p-3 border rounded-lg w-full"
+          className="p-2 border text-sm rounded w-full"
           value={data}
           onChange={(e) => setData(e.target.value)}
         />
         <input
           type="text"
-          className="p-3 border rounded-lg w-full"
-          placeholder="Indirizzo"
+          className="p-2 border text-sm rounded w-full"
+          placeholder="Indirizzo evento"
           value={indirizzo}
           onChange={(e) => setIndirizzo(e.target.value)}
         />
         <input
           type="file"
-          className="p-3 border rounded-lg w-full"
+          className="p-2 border text-sm rounded w-full"
           accept="image/*"
           onChange={(e) => setLocandina(e.target.files ? e.target.files[0] : null)}
         />
-        <button
-          onClick={handleAddEvento}
-          disabled={loading}
-          className={`p-3 text-white rounded-lg flex items-center justify-center w-full ${
-            loading ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
-          }`}
-        >
-          {loading ? <Loader2 className="animate-spin" size={24} /> : <PlusCircle size={24} />}
-          <span className="ml-2">{loading ? "Aggiungendo..." : "Aggiungi Evento"}</span>
-        </button>
       </div>
 
+      <button
+        onClick={handleAddEvento}
+        disabled={loading}
+        className={`w-full flex items-center justify-center gap-2 text-sm text-white rounded-md p-2 transition ${
+          loading ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
+        }`}
+      >
+        {loading ? <Loader2 className="animate-spin" size={18} /> : <PlusCircle size={18} />}
+        {loading ? "Aggiungendo..." : "Aggiungi Evento"}
+      </button>
+
       {error && (
-        <div className="text-red-600 text-center bg-red-100 border border-red-300 rounded p-2 mt-2">
+        <div className="text-red-600 text-sm text-center bg-red-100 border border-red-300 rounded p-2 mt-2">
           {error}
         </div>
       )}
       {success && (
-        <div className="text-green-600 text-center bg-green-100 border border-green-300 rounded p-2 mt-2">
+        <div className="text-green-600 text-sm text-center bg-green-100 border border-green-300 rounded p-2 mt-2">
           {success}
         </div>
       )}

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { Calendar } from "lucide-react";
 
 interface Event {
@@ -14,6 +15,7 @@ interface Event {
 const EventHistory = () => {
   const [eventi, setEventi] = useState<Event[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchEventHistory = async () => {
@@ -27,6 +29,10 @@ const EventHistory = () => {
 
     fetchEventHistory();
   }, []);
+
+  const handleClick = (id: number) => {
+    router.push(`/admin/dashboard/eventi/${id}`);
+  };
 
   return (
     <div className="bg-white shadow-lg rounded-xl p-6 w-full max-w-4xl mx-auto">
@@ -45,7 +51,8 @@ const EventHistory = () => {
             {eventi.map((evento) => (
               <div
                 key={evento.id}
-                className="p-4 bg-gray-50 rounded-lg shadow-sm border border-gray-200 transition-all hover:shadow-md"
+                onClick={() => handleClick(evento.id)}
+                className="cursor-pointer p-4 bg-gray-50 rounded-lg shadow-sm border border-gray-200 transition-all hover:shadow-md hover:bg-gray-100"
               >
                 <h4 className="text-lg font-bold text-gray-800">{evento.nome}</h4>
                 <p className="text-gray-500 text-sm">
