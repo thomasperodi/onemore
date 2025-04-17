@@ -22,7 +22,7 @@ export async function GET() {
 
 
 
-// Configurazione soglie e prezzi (facile da modificare)
+// ✅ Regole incasso in base all'orario
 const pricingRules = [
   { oraLimite: "20:00", prezzo: 10 },
   { oraLimite: "21:00", prezzo: 12 },
@@ -30,41 +30,59 @@ const pricingRules = [
 ];
 
 function calcolaPrezzo(orario: string): number {
-  const [oraIngresso, minutoIngresso] = orario.split("T")[1].split(":").map(Number);
-  const minutiIngresso = oraIngresso * 60 + minutoIngresso;
+  try {
+    const timePart = orario.split("T")[1]?.slice(0, 5); // "HH:MM"
+    if (!timePart) return pricingRules.at(-1)?.prezzo ?? 15;
 
-  for (const regola of pricingRules) {
-    const [h, m] = regola.oraLimite.split(":").map(Number);
-    const minutiLimite = h * 60 + m;
-    if (minutiIngresso <= minutiLimite) {
-      return regola.prezzo;
+    const [oraIngresso, minutoIngresso] = timePart.split(":").map(Number);
+    const minutiIngresso = oraIngresso * 60 + minutoIngresso;
+
+    for (const regola of pricingRules) {
+      const [h, m] = regola.oraLimite.split(":").map(Number);
+      const minutiLimite = h * 60 + m;
+      if (minutiIngresso <= minutiLimite) return regola.prezzo;
     }
-  }
 
-  return pricingRules[pricingRules.length - 1].prezzo; // fallback
+    return pricingRules.at(-1)?.prezzo ?? 15;
+  } catch {
+    return pricingRules.at(-1)?.prezzo ?? 15;
+  }
 }
 
+// ✅ PATCH: aggiorna ingresso, orario e incasso
 export async function PATCH(req: Request) {
-  const { id, ingresso } = await req.json();
+  try {
+    const { id, ingresso } = await req.json();
 
-  // Se ingresso è TRUE, salva l'orario e calcola l'incasso
-  let timestamp: string | null = null;
-  let incasso: number | null = null;
+    if (!id || typeof ingresso !== "boolean") {
+      return NextResponse.json({ error: "Dati non validi" }, { status: 400 });
+    }
 
-  if (ingresso) {
-    timestamp = new Date().toLocaleString("sv-SE", { timeZone: "Europe/Rome" });
-    incasso = calcolaPrezzo(timestamp);
+    let timestamp: string | null = null;
+    let incasso: number | null = null;
+
+    if (ingresso) {
+      timestamp = new Date().toLocaleString("sv-SE", { timeZone: "Europe/Rome" }); // esempio: 2025-04-17T20:15:00
+      incasso = calcolaPrezzo(timestamp);
+    }
+
+    const { data, error } = await supabase
+      .from("lista")
+      .update({ ingresso, orario_ingresso: timestamp, incasso })
+      .eq("id", id)
+      .select();
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    return NextResponse.json(data, { status: 200 });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.error("Errore PATCH:", err.message);
+    } else {
+      console.error("Errore PATCH:", err);
+    }
+    return NextResponse.json({ error: "Errore interno del server" }, { status: 500 });
   }
-
-  const { data, error } = await supabase
-    .from("lista")
-    .update({ ingresso, orario_ingresso: timestamp, incasso })
-    .eq("id", id)
-    .select();
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
-  }
-
-  return NextResponse.json(data, { status: 200 });
 }
