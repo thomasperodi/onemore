@@ -28,9 +28,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <Analytics/>
-        <SpeedInsights/>
+        
         <div className="flex flex-col min-h-screen">
-          <main className="flex-grow">{children}</main>
+          <main className="flex-grow">{children}<SpeedInsights/></main>
           <Footer />
         </div>
       </body>
