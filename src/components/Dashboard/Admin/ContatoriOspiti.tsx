@@ -28,11 +28,7 @@ const ContatoriOspiti = () => {
       const resLista = await axios.get("/api/admin/lista");
       const ospiti = resLista.data;
 
-      interface Ospite {
-        ingresso: boolean;
-        evento_id: number;
-      }
-
+      type Ospite = { evento_id: number; ingresso: boolean; nome?: string; email?: string };
       const ospitiEvento = ospiti.filter((o: Ospite) => o.evento_id === idEventoAttivo);
       const entratiCount = ospitiEvento.filter((o: Ospite) => o.ingresso).length;
 
@@ -48,25 +44,25 @@ const ContatoriOspiti = () => {
   }, []);
 
   useEffect(() => {
-    fetchDati(); // chiamata immediata quando l'id evento è disponibile
+    fetchDati();
     const interval = setInterval(fetchDati, 5000);
     return () => clearInterval(interval);
   }, [idEventoAttivo, fetchDati]);
 
   return (
-    <div className="w-full max-w-6xl mx-auto mb-4 p-4 bg-blue-50 border border-blue-200 rounded-xl shadow-sm flex flex-col md:flex-row justify-between items-center text-center gap-4">
-      <div>
-        <h2 className="text-lg font-semibold text-blue-800">Evento attivo</h2>
-        <p className="text-xl font-bold text-blue-900">{nomeEvento}</p>
+    <div className="w-full max-w-md mx-auto mb-3 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg shadow flex flex-col sm:flex-row justify-between items-center text-sm">
+      <div className="text-center sm:text-left">
+  
+        <p className="text-sm font-semibold text-blue-900 truncate">Evento - {nomeEvento}</p>
       </div>
-      <div className="flex gap-6">
-        <div>
-          <h3 className="text-sm text-gray-600">In lista</h3>
-          <p className="text-2xl font-bold text-gray-800">{totale}</p>
+      <div className="flex gap-4 mt-2 sm:mt-0">
+        <div className="text-center">
+          <p className="text-xs text-gray-500">In lista</p>
+          <p className="text-lg font-bold text-gray-800">{totale}</p>
         </div>
-        <div>
-          <h3 className="text-sm text-gray-600">Entrati</h3>
-          <p className="text-2xl font-bold text-green-600">{entrati}</p>
+        <div className="text-center">
+          <p className="text-xs text-gray-500">Entrati</p>
+          <p className="text-lg font-bold text-green-600">{entrati}</p>
         </div>
       </div>
     </div>
