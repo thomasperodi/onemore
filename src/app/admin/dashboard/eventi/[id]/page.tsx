@@ -54,46 +54,46 @@ const DettaglioEvento = () => {
 
   return (
     <AdminDashboardLayout>
-      <main className="max-w-md mx-auto px-3 py-4 bg-white shadow rounded-lg">
-        <h1 className="text-xl font-bold text-gray-800 text-center mb-3">{evento.nome}</h1>
+      <main className="w-full max-w-lg mx-auto px-4  bg-white shadow rounded-xl">
+        <h1 className="text-2xl font-bold text-gray-800 text-center mb-4">{evento.nome}</h1>
 
         {/* Locandina */}
-        <div className="w-full flex justify-center mb-3">
+        <div className="w-full flex justify-center mb-5">
           <Image
             src={evento.locandina}
             alt={`Locandina di ${evento.nome}`}
-            width={180}
-            height={270}
-            className="rounded-md shadow w-[140px] sm:w-[180px]"
+            width={300}
+            height={450}
+            className="rounded-lg shadow max-w-[70%] sm:max-w-[200px] h-auto"
           />
         </div>
 
-        {/* Info Evento */}
-        <div className="text-center text-gray-700 text-sm mb-4">
-          <p><span className="font-semibold">Data:</span> {new Date(evento.data).toLocaleString()}</p>
-          <p><span className="font-semibold">Incasso totale:</span> €{incassoTotale}</p>
-        </div>
-
         {/* Tabella */}
-        <h2 className="text-base font-semibold text-gray-700 mb-2 text-center">Ingressi per Prezzo</h2>
+        <h2 className="text-lg font-semibold text-gray-700 mb-2 text-center">Ingressi per Prezzo</h2>
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm text-center border border-gray-300 rounded-md shadow-sm">
             <thead className="bg-gray-100">
               <tr>
-                <th className="py-2 px-3 border-b">Prezzo</th>
-                <th className="py-2 px-3 border-b">Ingressi</th>
+                <th className="py-2 px-4 border-b">Prezzo</th>
+                <th className="py-2 px-4 border-b">Ingressi</th>
               </tr>
             </thead>
             <tbody>
               {[10, 12, 15].map((prezzo) => (
                 <tr key={prezzo} className="border-b">
-                  <td className="py-2 px-3">€{prezzo.toFixed(2)}</td>
-                  <td className="py-2 px-3">{ingressiPerPrezzo[prezzo] || 0}</td>
+                  <td className="py-2 px-4">€{prezzo.toFixed(2)}</td>
+                  <td className="py-2 px-4">{ingressiPerPrezzo[prezzo] || 0}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+        <button
+         className="mt-2 mb-2 w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+         onClick={() => alert(`Incasso totale: €${incassoTotale.toFixed(2)}`)}
+        >
+          Visualizza Incasso Totale
+        </button>
       </main>
     </AdminDashboardLayout>
   );
