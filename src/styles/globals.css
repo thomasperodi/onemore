@@ -20,6 +20,10 @@
     color: black !important;
   }
 }
+input, textarea, select {
+  background-color: white !important;
+  color: black !important;
+}
 
 html,
 body {

@@ -104,39 +104,42 @@ const EventForm = () => {
         </div>
       )}
 
-      <input
-        type="text"
-        name="nome"
-        value={formData.nome}
-        onChange={handleChange}
-        placeholder="Nome"
-        required
-        className="w-full p-3 rounded-lg text-black text-lg"
-        disabled={listaChiusa || loading}
-      />
-      <input
-        type="text"
-        name="cognome"
-        value={formData.cognome}
-        onChange={handleChange}
-        placeholder="Cognome"
-        required
-        className="w-full p-3 rounded-lg text-black text-lg"
-        disabled={listaChiusa || loading}
-      />
-      <div className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          id="consenso"
-          checked={consenso}
-          onChange={handleCheckboxChange}
-          className="w-5 h-5"
-          disabled={listaChiusa || loading}
-        />
-        <label htmlFor="consenso" className="text-sm">
-          Accetto il trattamento dei dati personali
-        </label>
-      </div>
+<input
+  type="text"
+  name="nome"
+  value={formData.nome}
+  onChange={handleChange}
+  placeholder="Nome"
+  required
+  className="w-full bg-white text-black placeholder-gray-500 border border-gray-300 rounded px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+  disabled={listaChiusa || loading}
+/>
+
+<input
+  type="text"
+  name="cognome"
+  value={formData.cognome}
+  onChange={handleChange}
+  placeholder="Cognome"
+  required
+  className="w-full bg-white text-black placeholder-gray-500 border border-gray-300 rounded px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+  disabled={listaChiusa || loading}
+/>
+
+<div className="flex items-center gap-2">
+  <input
+    type="checkbox"
+    id="consenso"
+    checked={consenso}
+    onChange={handleCheckboxChange}
+    className="w-5 h-5 accent-pink-600"
+    disabled={listaChiusa || loading}
+  />
+  <label htmlFor="consenso" className="text-sm text-white">
+    Accetto il trattamento dei dati personali
+  </label>
+</div>
+
 
       <button
         type="submit"

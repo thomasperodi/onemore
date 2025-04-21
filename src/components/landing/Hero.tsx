@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import Image from "next/image";
@@ -23,6 +24,28 @@ const slides = [
 ];
 
 const Hero = () => {
+  const [eventoAttivo, setEventoAttivo] = useState(false);
+
+  useEffect(() => {
+    const fetchEventStatus = async () => {
+      try {
+        const response = await fetch("/api/active-event");
+        const data = await response.json();
+        console.log("Dati evento:", data); // Vedi che i dati sono corretti
+    
+        // Assicurati che l'evento abbia una data e che sia valida
+        if (data?.length > 0) 
+          setEventoAttivo(true);
+      } catch (error) {
+        console.error("Errore nel recupero dell'evento attivo:", error);
+      }
+    };
+    
+    
+
+    fetchEventStatus();
+  }, []);
+
   return (
     <section className="relative w-full h-[500px] md:h-[80vh] lg:h-[90vh]">
       <Swiper
@@ -32,7 +55,6 @@ const Hero = () => {
         loop={true}
         autoplay={{ delay: 5000, disableOnInteraction: false }}
         pagination={{ clickable: true }}
-        
         className="w-full h-full"
       >
         {slides.map((slide, index) => (
@@ -51,16 +73,16 @@ const Hero = () => {
               <div className="absolute inset-0 bg-black/50" />
 
               {/* Bottone per la lista */}
-              <div className="relative z-10">
-              <Link 
-                href="/lista"
-                className="mt-6 px-6 py-3 bg-purple-600 text-white text-lg font-semibold rounded hover:bg-purple-800 transition inline-block"
-              >
-                Mettiti in lista
-              </Link>
-
-
-              </div>
+              {eventoAttivo && (
+                <div className="relative z-10">
+                  <Link 
+                    href="/lista"
+                    className="mt-6 px-6 py-3 bg-purple-600 text-white text-lg font-semibold rounded hover:bg-purple-800 transition inline-block"
+                  >
+                    Mettiti in lista
+                  </Link>
+                </div>
+              )}
             </div>
           </SwiperSlide>
         ))}

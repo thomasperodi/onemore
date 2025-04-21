@@ -69,12 +69,11 @@ const PastEvents: React.FC = () => {
             <div className="relative w-full aspect-square"> {/* Mantiene proporzioni 1:1 */}
               {event.locandina ? (
                 <Image
-                  src={event.locandina}
-                  alt={event.nome}
-                  layout="fill"
-                  objectFit="cover"
-                  className="object-cover hover:opacity-80 transition"
-                />
+                src={event.locandina}
+                alt={event.nome}
+                fill
+                className="object-cover hover:opacity-80 transition rounded-lg"
+              />
               ) : (
                 <div className="w-full h-full bg-gray-300 flex items-center justify-center">
                   <span className="text-gray-600">Immagine non disponibile</span>
