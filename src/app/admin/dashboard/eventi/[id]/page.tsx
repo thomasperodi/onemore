@@ -54,7 +54,8 @@ const DettaglioEvento = () => {
 
   return (
     <AdminDashboardLayout>
-      <main className="w-full max-w-lg mx-auto px-4  bg-white shadow rounded-xl">
+      <main className="w-full max-w-lg mx-auto px-4 pb-8 sm:pb-20 bg-white shadow rounded-xl">
+
         <h1 className="text-2xl font-bold text-gray-800 text-center mb-4">{evento.nome}</h1>
 
         {/* Locandina */}
@@ -69,20 +70,20 @@ const DettaglioEvento = () => {
         </div>
 
         {/* Tabella */}
-        <h2 className="text-lg font-semibold text-gray-700 mb-2 text-center">Ingressi per Prezzo</h2>
+        <h2 className="text-lg font-semibold text-gray-700 text-center">Ingressi per Prezzo</h2>
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm text-center border border-gray-300 rounded-md shadow-sm">
             <thead className="bg-gray-100">
               <tr>
-                <th className="py-2 px-4 border-b">Prezzo</th>
-                <th className="py-2 px-4 border-b">Ingressi</th>
+                <th className="py-1 px-4 border-b">Prezzo</th>
+                <th className="py-1 px-4 border-b">Ingressi</th>
               </tr>
             </thead>
             <tbody>
               {[10, 12, 15].map((prezzo) => (
                 <tr key={prezzo} className="border-b">
-                  <td className="py-2 px-4">€{prezzo.toFixed(2)}</td>
-                  <td className="py-2 px-4">{ingressiPerPrezzo[prezzo] || 0}</td>
+                  <td className="py-1 px-4">€{prezzo.toFixed(2)}</td>
+                  <td className="py-1 px-4">{ingressiPerPrezzo[prezzo] || 0}</td>
                 </tr>
               ))}
             </tbody>
