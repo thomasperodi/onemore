@@ -6,8 +6,8 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-// Recuperare il numero totale di ospiti per l'evento attivo
 export async function GET() {
+  // 🔍 Recupera evento attivo
   const { data: eventoAttuale, error: eventError } = await supabase
     .from("eventi")
     .select("id")
@@ -15,17 +15,40 @@ export async function GET() {
     .single();
 
   if (eventError || !eventoAttuale) {
-    return NextResponse.json({ error: "Nessun evento attivo trovato" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Nessun evento attivo trovato" },
+      { status: 400 }
+    );
   }
 
-  const { data: ospiti, error: listError } = await supabase
+  const eventoId = eventoAttuale.id;
+
+  // 📊 Conta ospiti totali
+  const { count: totaleOspiti, error: totalError } = await supabase
     .from("lista")
-    .select("id")
-    .eq("evento_id", eventoAttuale.id);
+    .select("id", { count: "exact", head: true })
+    .eq("evento_id", eventoId);
 
-  if (listError) {
-    return NextResponse.json({ error: listError.message }, { status: 400 });
+  // 📊 Conta ospiti entrati
+  const { count: ospitiEntrati, error: ingressoError } = await supabase
+    .from("lista")
+    .select("id", { count: "exact", head: true })
+    .eq("evento_id", eventoId)
+    .eq("ingresso", true);
+
+  if (totalError || ingressoError) {
+    return NextResponse.json(
+      { error: "Errore nel conteggio degli ospiti" },
+      { status: 500 }
+    );
   }
 
-  return NextResponse.json({ count: ospiti.length }, { status: 200 });
+  return NextResponse.json(
+    {
+      evento_id: eventoId,
+      totale_ospiti: totaleOspiti,
+      ospiti_entrati: ospitiEntrati,
+    },
+    { status: 200 }
+  );
 }

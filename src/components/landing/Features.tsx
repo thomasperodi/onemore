@@ -1,5 +1,5 @@
 // components/Features.tsx
-"use client"
+
 const Features = () => {
     const features = [
       {

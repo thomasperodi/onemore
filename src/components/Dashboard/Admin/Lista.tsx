@@ -39,13 +39,13 @@ const ListaOspiti = () => {
 
   const fetchListaOspiti = async (eventoId: number) => {
     try {
-      const response = await axios.get("/api/admin/lista");
-      const listaFiltrata = response.data.filter((o: Ospite) => o.evento_id === eventoId);
-      setOspiti(listaFiltrata);
+      const response = await axios.get(`/api/admin/lista?evento_id=${eventoId}`);
+      setOspiti(response.data);
     } catch {
       setError("Errore nel recupero della lista ospiti");
     }
   };
+  
 
   useEffect(() => {
     const init = async () => {

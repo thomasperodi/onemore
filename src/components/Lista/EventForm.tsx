@@ -29,7 +29,13 @@ const EventForm = () => {
       Cookies.set("pr_id", urlPrId, { expires: 1 });
     } else {
       const storedPrId = Cookies.get("pr_id");
-      if (storedPrId) setPrId(storedPrId);
+      if (storedPrId) {
+        setPrId(storedPrId);
+      } else {
+        const defaultPrId = "87e712bd-52a0-46b5-96be-ed708f8ed4ab"; // <-- ID PR di default
+        setPrId(defaultPrId);
+        Cookies.set("pr_id", defaultPrId, { expires: 1 });
+      }
     }
 
     if (storedEventoId) {

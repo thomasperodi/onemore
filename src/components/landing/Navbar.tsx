@@ -37,7 +37,7 @@ const Navbar = () => {
           <Link href="/#about">About</Link>
         </li>
         <li className="hover:bg-[#c634ef] px-4 py-2 rounded">
-          <Link href="/#contact">Contact</Link>
+          <Link href="/#contact">Contatti</Link>
         </li>
       </ul>
 
@@ -100,7 +100,7 @@ const Navbar = () => {
           className="py-3 text-xl hover:bg-[#dd78fa] w-full text-center"
           onClick={() => setMenuOpen(false)}
         >
-          Contact
+          Contatti
         </Link>
 
         {/* LOGIN MOBILE */}

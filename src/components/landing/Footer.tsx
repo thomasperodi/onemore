@@ -1,4 +1,4 @@
-"use client"
+
 
 import { Instagram } from "lucide-react";
 import { FaTelegramPlane, FaWhatsapp } from "react-icons/fa";
@@ -26,13 +26,13 @@ const Footer = () => {
         <div>
           <h3 className="text-lg font-semibold mb-4">Seguici</h3>
           <div className="flex justify-center md:justify-start gap-5">
-            <a href="https://instagram.com" aria-label="Instagram" target="_blank" rel="noopener noreferrer" className="hover:text-pink-500 transition-transform transform hover:scale-110">
+            <a href="https://www.instagram.com/onemoreandfam" aria-label="Instagram" target="_blank" rel="noopener noreferrer" className="hover:text-pink-500 transition-transform transform hover:scale-110">
               <Instagram size={28} />
             </a>
-            <a href="https://t.me/yourchannel" aria-label="Telegram" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-transform transform hover:scale-110">
+            <a href="https://t.me/onemoreandfam" aria-label="Telegram" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-transform transform hover:scale-110">
               <FaTelegramPlane size={28} />
             </a>
-            <a href="https://wa.me/yourwhatsappnumber" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer" className="hover:text-green-400 transition-transform transform hover:scale-110">
+            <a href="https://wa.me/393482395186" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer" className="hover:text-green-400 transition-transform transform hover:scale-110">
               <FaWhatsapp size={28} />
             </a>
           </div>

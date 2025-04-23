@@ -10,7 +10,7 @@ const NotFoundPage = () => {
   return (
   <>
     <Navbar/>
-    <title>Onemoreadnfam; 404 - Pagina non trovata</title>
+    <title>Onemoreandfam; 404 - Pagina non trovata</title>
     <div className="min-h-screen flex flex-col items-center justify-center text-center bg-white px-4 py-10">
       
       <h1 className="text-4xl font-bold text-gray-800 mb-2">Oops! Pagina non trovata</h1>

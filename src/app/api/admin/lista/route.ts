@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -7,10 +7,31 @@ const supabase = createClient(
 );
 
 // Recupera tutta la lista con il join su PR
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const eventoId = searchParams.get("evento_id");
+
+  if (!eventoId) {
+    return NextResponse.json({ error: "evento_id è obbligatorio" }, { status: 400 });
+  }
+
   const { data, error } = await supabase
     .from("lista")
-    .select("id, evento_id, nome_utente, cognome_utente, ingresso, orario_ingresso, incasso, pr_id, pr:pr_id(nome, cognome)")
+    .select(`
+      id,
+      evento_id,
+      nome_utente,
+      cognome_utente,
+      ingresso,
+      orario_ingresso,
+      incasso,
+      pr_id,
+      pr:pr_id (
+        nome,
+        cognome
+      )
+    `)
+    .eq("evento_id", eventoId)
     .order("id", { ascending: true });
 
   if (error) {

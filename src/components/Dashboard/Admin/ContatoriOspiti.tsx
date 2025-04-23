@@ -25,15 +25,13 @@ const ContatoriOspiti = () => {
     if (idEventoAttivo === null) return;
 
     try {
-      const resLista = await axios.get("/api/admin/lista");
+      const resLista = await axios.get("/api/admin/lista-evento");
       const ospiti = resLista.data;
+      
+      
 
-      type Ospite = { evento_id: number; ingresso: boolean; nome?: string; email?: string };
-      const ospitiEvento = ospiti.filter((o: Ospite) => o.evento_id === idEventoAttivo);
-      const entratiCount = ospitiEvento.filter((o: Ospite) => o.ingresso).length;
-
-      setEntrati(entratiCount);
-      setTotale(ospitiEvento.length);
+      setEntrati(ospiti.ospiti_entrati);
+      setTotale(ospiti.totale_ospiti);
     } catch (err) {
       console.error("Errore nel recupero dei contatori", err);
     }

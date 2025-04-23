@@ -8,21 +8,23 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    let nome = body.nome;
-    let cognome = body.cognome;
-    const eventoId = body.eventoId;
-    const prId = body.prId;
+    let { nome, cognome} = body;
+    const { eventoId, prId} = body;
 
-    if (!nome || !cognome || !eventoId) {
-      return NextResponse.json({ error: "Nome, cognome ed eventoId sono obbligatori" }, { status: 400 });
+    if (!nome || !cognome || !eventoId || !prId) {
+      return NextResponse.json(
+        { error: "Nome, cognome, eventoId e prId sono obbligatori" },
+        { status: 400 }
+      );
     }
 
     // 🛠️ Format nome e cognome
-    const formatString = (str: string) => str.trim().toLowerCase().replace(/^(\w)/, (c: string) => c.toUpperCase());
+    const formatString = (str: string) =>
+      str.trim().toLowerCase().replace(/^(\w)/, (c: string) => c.toUpperCase());
     nome = formatString(nome);
     cognome = formatString(cognome);
 
-    // 🔍 Controlla se l'utente è già in lista
+    // 🔍 Controlla se l'utente è già in lista per lo stesso evento
     const { data: existingUsers, error: checkError } = await supabase
       .from("lista")
       .select("id")
@@ -32,43 +34,46 @@ export async function POST(req: NextRequest) {
 
     if (checkError) {
       console.error("Errore durante il controllo duplicati:", checkError);
-      return NextResponse.json({ error: "Errore durante il controllo duplicati" }, { status: 500 });
+      return NextResponse.json(
+        { error: "Errore durante il controllo duplicati" },
+        { status: 500 }
+      );
     }
 
     if (existingUsers && existingUsers.length > 0) {
-      return NextResponse.json({ error: "Utente già inserito in lista" }, { status: 409 });
+      return NextResponse.json(
+        { error: "Utente già inserito in lista" },
+        { status: 409 }
+      );
     }
 
-    // 🕒 Determina il prezzo in base all'orario
-    const determinaPrezzo = (): number => {
-      const oraCorrente = new Date().getHours();
-      if (oraCorrente >= 18 && oraCorrente < 20) return 10;
-      if (oraCorrente >= 20 && oraCorrente < 22) return 12;
-      return 15;
-    };
-
-    const prezzoIngresso = determinaPrezzo();
-
-    // ⏳ Inserimento in lista con incasso calcolato
-    const { error } = await supabase.from("lista").insert([
-      { 
-        evento_id: eventoId, 
-        pr_id: prId || null, 
-        nome_utente: nome, 
-        cognome_utente: cognome, 
-        ingresso: false, 
-        incasso: prezzoIngresso 
-      }
+    // ✅ Inserisci nuovo utente in lista
+    const { error: insertError } = await supabase.from("lista").insert([
+      {
+        nome_utente: nome,
+        cognome_utente: cognome,
+        evento_id: eventoId,
+        pr_id: prId,
+      },
     ]);
 
-    if (error) {
-      console.error("Errore Supabase:", error);
-      return NextResponse.json({ error: "Errore durante l'inserimento in lista" }, { status: 500 });
+    if (insertError) {
+      console.error("Errore durante l'inserimento:", insertError);
+      return NextResponse.json(
+        { error: "Errore durante l'inserimento in lista" },
+        { status: 500 }
+      );
     }
 
-    return NextResponse.json({ message: "Registrazione completata con successo!", incasso: prezzoIngresso }, { status: 200 });
+    return NextResponse.json(
+      { message: "Registrazione completata con successo!" },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Errore API:", error);
-    return NextResponse.json({ error: "Errore interno del server" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Errore interno del server" },
+      { status: 500 }
+    );
   }
 }
