@@ -20,7 +20,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="it">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {/* analytics / speed insights */}
         <Analytics />
 
         <div className="flex flex-col min-h-screen">
@@ -31,8 +30,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Footer />
         </div>
 
-        {/* ─── IUBENDA COOKIE SOLUTION ─── */}
-        {/* 1) config diretta su window._iub.csConfiguration */}
+        {/*
+          1) Configurazione Iubenda: inline, prima del loader
+        */}
         <Script id="iubenda-config" strategy="beforeInteractive">
           {`
             window._iub = window._iub || {};
@@ -49,18 +49,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               enableTcf: false,
               askConsentAtCookiePolicyUpdate: true,
               perPurposeConsent: true,
-              cookiePolicyOnly: false
+              cookiePolicyOnly: false,
+              skipSaveConsentWidget: false
             };
           `}
         </Script>
 
-        {/* 2) loader ufficiale da CDN */}
+        {/*
+          2) Loader ufficiale Iubenda: dopo la config ma comunque prima dell’interazione utente
+        */}
         <Script
           id="iubenda-loader"
           src="https://cdn.iubenda.com/cs/iubenda_cs.js"
-          strategy="beforeInteractive"
+          strategy="afterInteractive"
         />
-        {/* ──────────────────────────────── */}
       </body>
     </html>
   );
