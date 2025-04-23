@@ -20,7 +20,7 @@ export default function IubendaScript() {
           customizeButtonDisplay: true,
           position: "bottom"
         },
-        invalidateConsentOnStorageMismatch: true,
+        invalidateConsentOnStorageMismatch: false,
         enableTcf: true,
         askConsentAtCookiePolicyUpdate: true,
         perPurposeConsent: true,
