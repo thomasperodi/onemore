@@ -47,13 +47,13 @@ export default function RootLayout({
         lang: "it",
         siteId: 4005541,
         cookiePolicyId: 37922822,
-        cookieDomain: location.hostname,
+        cookieDomain: window.location.hostname,
         banner: {
           acceptButtonDisplay: true,
           customizeButtonDisplay: true,
           position: "bottom"
         },
-        invalidateConsentOnStorageMismatch: false,
+        invalidateConsentOnStorageMismatch: true,
         enableTcf: true,
         askConsentAtCookiePolicyUpdate: true,
         perPurposeConsent: true,
