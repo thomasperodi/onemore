@@ -27,15 +27,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="it">
-      
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <Analytics/>
-        <IubendaScript/>
-        
+        <Analytics />
+
         <div className="flex flex-col min-h-screen">
-          <main className="flex-grow">{children}<SpeedInsights/></main>
+          <main className="flex-grow">
+            {children}
+            <SpeedInsights />
+          </main>
           <Footer />
         </div>
+
+        
+        <IubendaScript />
       </body>
     </html>
   );
