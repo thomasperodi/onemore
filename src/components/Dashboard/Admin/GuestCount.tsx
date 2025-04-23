@@ -12,8 +12,9 @@ async function getGuestCount(): Promise<{ totale_ospiti: number; ospiti_entrati:
     
     // Verifica che entrambi i campi siano presenti
     return {
-      totale_ospiti: data.totale_ospiti || 0  // Usa 0 se non c'è il dato
-    };
+      totale_ospiti: data.totale_ospiti || 0,  // Usa 0 se non c'è il dato
+      entrati_ospiti: data.ospiti_entrati
+};
   } catch {
     return null;
   }
