@@ -1,16 +1,20 @@
 "use client";
 import { useEffect } from "react";
 
+declare global {
+  interface Window {
+    _iub: Array<Record<string, unknown>>;
+  }
+}
+
 export default function IubendaScript() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // Configurazione dello script inline
-    const configScript = document.createElement("script");
-    configScript.type = "text/javascript";
-    configScript.innerHTML = `
-      var _iub = _iub || [];
-      _iub.csConfiguration = {
+    window._iub = window._iub || [];
+
+    window._iub.push({
+      csConfiguration: {
         lang: "it",
         siteId: 4005541,
         cookiePolicyId: 37922822,
@@ -25,11 +29,9 @@ export default function IubendaScript() {
         askConsentAtCookiePolicyUpdate: true,
         perPurposeConsent: true,
         cookiePolicyOnly: false
-      };
-    `;
-    document.head.appendChild(configScript);
+      }
+    });
 
-    // Script da CDN
     const iubendaScript = document.createElement("script");
     iubendaScript.type = "text/javascript";
     iubendaScript.src = "https://cdn.iubenda.com/cs/iubenda_cs.js";
