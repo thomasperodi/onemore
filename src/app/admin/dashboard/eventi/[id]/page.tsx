@@ -53,8 +53,8 @@ const DettaglioEvento = () => {
   );
 
   return (
-    <AdminDashboardLayout>
-  <main className="w-full max-w-lg mx-auto px-4 py-6 bg-white shadow rounded-xl mb-10">
+  <AdminDashboardLayout>
+  <main className="w-full max-w-lg mx-auto px-4 py-4 bg-white shadow rounded-xl mb-12">
     <h1 className="text-2xl font-bold text-gray-800 text-center mb-3">{evento.nome}</h1>
 
     {/* Locandina */}
@@ -70,7 +70,7 @@ const DettaglioEvento = () => {
 
     {/* Tabella */}
     <h2 className="text-lg font-semibold text-gray-700 mb-2 text-center">Ingressi per Prezzo</h2>
-    <div className="overflow-x-auto mb-3">
+    <div className="overflow-x-auto mb-4">
       <table className="min-w-full text-sm text-center border border-gray-300 rounded-md shadow-sm">
         <thead className="bg-gray-100">
           <tr>
