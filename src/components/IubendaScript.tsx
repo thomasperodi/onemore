@@ -1,9 +1,11 @@
 "use client";
-
 import { useEffect } from "react";
 
 export default function IubendaScript() {
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    // Configurazione dello script inline
     const configScript = document.createElement("script");
     configScript.type = "text/javascript";
     configScript.innerHTML = `
@@ -26,10 +28,12 @@ export default function IubendaScript() {
     `;
     document.head.appendChild(configScript);
 
-    const csScript = document.createElement("script");
-    csScript.src = "//cdn.iubenda.com/cs/iubenda_cs.js";
-    csScript.async = true;
-    document.head.appendChild(csScript);
+    // Script da CDN
+    const iubendaScript = document.createElement("script");
+    iubendaScript.type = "text/javascript";
+    iubendaScript.src = "https://cdn.iubenda.com/cs/iubenda_cs.js";
+    iubendaScript.async = true;
+    document.head.appendChild(iubendaScript);
   }, []);
 
   return null;
