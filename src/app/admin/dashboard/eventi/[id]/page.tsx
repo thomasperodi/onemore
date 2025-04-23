@@ -54,7 +54,7 @@ const DettaglioEvento = () => {
 
   return (
   <AdminDashboardLayout>
-  <main className="w-full max-w-lg mx-auto px-4 py-4 bg-white shadow rounded-xl mb-12">
+  <main className="w-full max-w-lg mx-auto px-4 py-4 bg-white shadow rounded-xl mb-20">
     <h1 className="text-2xl font-bold text-gray-800 text-center mb-3">{evento.nome}</h1>
 
     {/* Locandina */}
