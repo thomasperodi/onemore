@@ -11,8 +11,8 @@ export default function IubendaScript() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
+    // Inizializza _iub e push della configurazione
     window._iub = window._iub || [];
-
     window._iub.push({
       csConfiguration: {
         lang: "it",
@@ -32,11 +32,12 @@ export default function IubendaScript() {
       }
     });
 
+    // Script caricato solo DOPO la configurazione
     const iubendaScript = document.createElement("script");
-    iubendaScript.type = "text/javascript";
     iubendaScript.src = "https://cdn.iubenda.com/cs/iubenda_cs.js";
+    iubendaScript.type = "text/javascript";
     iubendaScript.async = true;
-    document.head.appendChild(iubendaScript);
+    document.body.appendChild(iubendaScript);
   }, []);
 
   return null;
