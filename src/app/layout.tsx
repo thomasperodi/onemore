@@ -4,7 +4,6 @@ import "@/styles/globals.css";
 import Footer from "@/components/landing/Footer";
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import IubendaInlineScript from "@/components/IubendaInlineScript";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -39,7 +38,36 @@ export default function RootLayout({
         </div>
 
         
-        <IubendaInlineScript />
+        <script
+  type="text/javascript"
+  dangerouslySetInnerHTML={{
+    __html: `
+      var _iub = _iub || [];
+      _iub.csConfiguration = {
+        lang: "it",
+        siteId: 4005541,
+        cookiePolicyId: 37922822,
+        cookieDomain: location.hostname,
+        banner: {
+          acceptButtonDisplay: true,
+          customizeButtonDisplay: true,
+          position: "bottom"
+        },
+        invalidateConsentOnStorageMismatch: false,
+        enableTcf: true,
+        askConsentAtCookiePolicyUpdate: true,
+        perPurposeConsent: true,
+        cookiePolicyOnly: false
+      };
+    `,
+  }}
+></script>
+<script
+  type="text/javascript"
+  src="https://cdn.iubenda.com/cs/iubenda_cs.js"
+  async
+></script>
+
       </body>
     </html>
   );
