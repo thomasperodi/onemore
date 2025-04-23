@@ -14,7 +14,7 @@ interface Ospite {
   pr: { nome: string; cognome: string } | null;
 }
 
-const ITEMS_PER_PAGE_MOBILE = 6;
+const ITEMS_PER_PAGE_MOBILE = 5;
 const ITEMS_PER_PAGE_DESKTOP = 12;
 
 const ListaOspiti = () => {
