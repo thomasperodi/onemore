@@ -14,7 +14,7 @@ interface Ospite {
   pr: { nome: string; cognome: string } | null;
 }
 
-const ITEMS_PER_PAGE_MOBILE = 6;
+const ITEMS_PER_PAGE_MOBILE = 5;
 const ITEMS_PER_PAGE_DESKTOP = 12;
 
 const ListaOspiti = () => {
@@ -45,7 +45,6 @@ const ListaOspiti = () => {
       setError("Errore nel recupero della lista ospiti");
     }
   };
-  
 
   useEffect(() => {
     const init = async () => {
@@ -134,15 +133,25 @@ const ListaOspiti = () => {
                     <td className="p-2">{ospite.nome_utente}</td>
                     <td className="p-2">{ospite.cognome_utente}</td>
                     <td className="p-2">{ospite.pr ? `${ospite.pr.nome} ${ospite.pr.cognome}` : "N/A"}</td>
-                    <td className="p-2">{ospite.ingresso ? "Entrato" : "Non entrato"}</td>
+                    <td className="p-2">
+                      <span
+                        className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium
+                          ${ospite.ingresso ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
+                      >
+                        {ospite.ingresso ? <CheckCircle size={14} /> : <XCircle size={14} />}
+                        {ospite.ingresso ? "Entrato" : "Non entrato"}
+                      </span>
+                    </td>
                     <td className="p-2">
                       <button
                         onClick={() => handleCheckIn(ospite.id, ospite.ingresso)}
-                        className={`p-1 text-white rounded transition ${
-                          ospite.ingresso ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"
-                        }`}
+                        className={`flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md transition
+                          ${ospite.ingresso
+                            ? "bg-red-600 hover:bg-red-700 focus:ring-2 focus:ring-red-300"
+                            : "bg-green-600 hover:bg-green-700 focus:ring-2 focus:ring-green-300"} text-white`}
                       >
-                        {ospite.ingresso ? <XCircle size={16} /> : <CheckCircle size={16} />}
+                        {ospite.ingresso ? <XCircle size={14} /> : <CheckCircle size={14} />}
+                        {ospite.ingresso ? "Annulla" : "Conferma"}
                       </button>
                     </td>
                   </tr>
@@ -158,17 +167,23 @@ const ListaOspiti = () => {
                 <div className="flex flex-col text-sm">
                   <h4 className="font-bold text-gray-800">{ospite.nome_utente} {ospite.cognome_utente}</h4>
                   <span className="text-xs text-gray-500">{ospite.pr ? `PR: ${ospite.pr.nome} ${ospite.pr.cognome}` : "N/A"}</span>
-                  <span className={`font-semibold ${ospite.ingresso ? "text-green-600" : "text-red-600"}`}>
+                  <span
+                    className={`inline-flex items-center gap-1 px-2 py-1 mt-1 rounded-full text-xs font-medium w-fit
+                      ${ospite.ingresso ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
+                  >
+                    {ospite.ingresso ? <CheckCircle size={14} /> : <XCircle size={14} />}
                     {ospite.ingresso ? "Entrato" : "Non entrato"}
                   </span>
                 </div>
                 <button
                   onClick={() => handleCheckIn(ospite.id, ospite.ingresso)}
-                  className={`p-1 text-white rounded transition ${
-                    ospite.ingresso ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"
-                  }`}
+                  className={`flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md transition
+                    ${ospite.ingresso
+                      ? "bg-red-600 hover:bg-red-700 focus:ring-2 focus:ring-red-300"
+                      : "bg-green-600 hover:bg-green-700 focus:ring-2 focus:ring-green-300"} text-white`}
                 >
-                  {ospite.ingresso ? <XCircle size={16} /> : <CheckCircle size={16} />}
+                  {ospite.ingresso ? <XCircle size={14} /> : <CheckCircle size={14} />}
+                  {ospite.ingresso ? "Annulla" : "Conferma"}
                 </button>
               </div>
             ))}
@@ -176,7 +191,7 @@ const ListaOspiti = () => {
 
           {/* Paginazione */}
           {totalPages > 1 && (
-            <div className="flex justify-between items-center mt-2 text-sm">
+            <div className="flex justify-between items-center mt-3 text-sm">
               <button
                 disabled={currentPage === 0}
                 onClick={() => setCurrentPage(currentPage - 1)}

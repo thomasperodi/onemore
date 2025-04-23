@@ -21,8 +21,7 @@ export default function IubendaScript() {
         enableTcf: true,
         askConsentAtCookiePolicyUpdate: true,
         perPurposeConsent: true,
-        cookiePolicyOnly: false,
-        skipSaveConsentWidget: true
+        cookiePolicyOnly: false
       };
     `;
     document.head.appendChild(configScript);

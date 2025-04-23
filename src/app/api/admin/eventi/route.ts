@@ -15,72 +15,71 @@ function formatIndirizzo(indirizzo: string): string {
 /**
  * 📥 Recupera tutti gli eventi ordinati per data con statistiche
  */
-export async function GET() {
+export async function GET(req: Request) {
   console.log("▶️ GET /api/admin/eventi");
 
-  const { data: eventi, error: eventiError } = await supabase
+  // Legge i parametri di query dalla URL
+  const { searchParams } = new URL(req.url);
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const limit = parseInt(searchParams.get("limit") || "5", 10);
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+
+  // Recupera gli eventi con range paginato
+  const { data: eventi, error: eventiError, count } = await supabase
     .from("eventi")
-    .select("*")
-    .order("data", { ascending: false });
+    .select("*", { count: "exact" })
+    .order("data", { ascending: false })
+    .range(from, to);
 
   if (eventiError) {
     console.error("❌ Errore recupero eventi:", eventiError.message);
     return NextResponse.json({ error: eventiError.message }, { status: 400 });
   }
 
+  // Arricchisci ogni evento con i dati statistici
   const eventiArricchiti = await Promise.all(
     eventi.map(async (evento) => {
       const eventoId = evento.id;
 
-      // Persone in lista
-      const { data: listaCount, error: listaError } = await supabase
+      // Conteggio persone in lista
+      const { count: listaCount, error: listaError } = await supabase
         .from("lista")
-        .select("id", { count: "exact" })
+        .select("*", { count: "exact", head: true })
         .eq("evento_id", eventoId);
 
-      const personeInLista = listaCount ? listaCount.length : 0;
-
-      if (listaError) {
-        console.error(`❌ Errore lista evento ${eventoId}:`, listaError.message);
-      }
-
-      // Ingressi effettivi
-      const { data: ingressiCount, error: ingressiError } = await supabase
+      // Conteggio ingressi effettivi
+      const { count: ingressiCount, error: ingressiError } = await supabase
         .from("lista")
-        .select("id", { count: "exact" })
+        .select("*", { count: "exact", head: true })
         .eq("evento_id", eventoId)
         .eq("ingresso", true);
 
-      const ingressiEffettivi = ingressiCount ? ingressiCount.length : 0;
-
-      if (ingressiError) {
-        console.error(`❌ Errore ingressi evento ${eventoId}:`, ingressiError.message);
-      }
-
-      // Incasso
+      // Calcolo incasso totale
       const { data: incassoData, error: incassoError } = await supabase
         .from("lista")
-        .select("incasso");
+        .select("incasso")
+        .eq("evento_id", eventoId);
 
-      const incassoTotale = incassoData
-        ? incassoData.reduce((acc, e) => acc + (e.incasso || 0), 0)
-        : 0;
+      const incassoTotale = incassoData?.reduce((acc, e) => acc + (e.incasso || 0), 0) || 0;
 
-      if (incassoError) {
-        console.error(`❌ Errore incasso evento ${eventoId}:`, incassoError.message);
-      }
+      if (listaError) console.error(`⚠️ Errore lista evento ${eventoId}:`, listaError.message);
+      if (ingressiError) console.error(`⚠️ Errore ingressi evento ${eventoId}:`, ingressiError.message);
+      if (incassoError) console.error(`⚠️ Errore incasso evento ${eventoId}:`, incassoError.message);
 
       return {
         ...evento,
-        persone_in_lista: personeInLista,
-        ingressi_effettivi: ingressiEffettivi,
+        persone_in_lista: listaCount || 0,
+        ingressi_effettivi: ingressiCount || 0,
         incasso_totale: incassoTotale,
       };
     })
   );
 
-  console.log("✅ Eventi recuperati con successo:", eventiArricchiti.length);
-  return NextResponse.json(eventiArricchiti, { status: 200 });
+  const totalePagine = Math.ceil((count || 0) / limit);
+
+  console.log(`✅ Eventi recuperati (pagina ${page}/${totalePagine}):`, eventiArricchiti.length);
+  return NextResponse.json({ eventi: eventiArricchiti, totalePagine }, { status: 200 });
 }
 
 /**
