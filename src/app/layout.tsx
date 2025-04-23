@@ -1,32 +1,26 @@
+/* app/layout.tsx */
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/styles/globals.css";
 import Footer from "@/components/landing/Footer";
-import { Analytics } from "@vercel/analytics/react"
-import { SpeedInsights } from "@vercel/speed-insights/next"
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import Script from "next/script";
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
+const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Onemoreandfam",
-  description: "OneMore&Fam è l'organizzazione di eventi che porta i TikToker più popolari nelle serate più esclusive, creando esperienze uniche e coinvolgenti per tutti i partecipanti.",
+  description:
+    "OneMore&Fam è l'organizzazione di eventi che porta i TikToker più popolari nelle serate più esclusive, creando esperienze uniche e coinvolgenti per tutti i partecipanti.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="it">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        {/* analytics / speed insights */}
         <Analytics />
 
         <div className="flex flex-col min-h-screen">
@@ -37,38 +31,38 @@ export default function RootLayout({
           <Footer />
         </div>
 
-        
-        <script
-  type="text/javascript"
-  dangerouslySetInnerHTML={{
-    __html: `
-      var _iub = _iub || [];
-      _iub.csConfiguration = {
-        lang: "it",
-        siteId: 4005541,
-        cookiePolicyId: 37922822,
-        cookieDomain: location.hostname.replace(/^www\\./,''),
-        banner: {
-          acceptButtonDisplay: true,
-          customizeButtonDisplay: true,
-          position: "bottom"
-        },
-        invalidateConsentOnStorageMismatch: false,
-        enableTcf: false,
-        askConsentAtCookiePolicyUpdate: true,
-        perPurposeConsent: true,
-        cookiePolicyOnly: false,
-        skipSaveConsentWidget: false,
-      };
-    `,
-  }}
-></script>
-<script
-  type="text/javascript"
-  src="https://cdn.iubenda.com/cs/iubenda_cs.js"
-  async
-></script>
+        {/* ─────────── IUBENDA COOKIE SOLUTION ─────────── */}
+        {/* 1. configurazione: deve venire PRIMA del loader */}
+        <Script
+          id="iubenda-config"
+          strategy="beforeInteractive"
+        >{`
+          var _iub = _iub || [];
+          _iub.csConfiguration = {
+            lang: "it",
+            siteId: 4005541,
+            cookiePolicyId: 37922822,
+            cookieDomain: ".onemore-delta.vercel.app",   /* usa il dominio produzione */
+            banner: {
+              acceptButtonDisplay: true,
+              customizeButtonDisplay: true,
+              position: "bottom"
+            },
+            invalidateConsentOnStorageMismatch: false,
+            enableTcf: false,                /* abilitalo solo se ti serve davvero */
+            askConsentAtCookiePolicyUpdate: true,
+            perPurposeConsent: true,
+            cookiePolicyOnly: false
+          };
+        `}</Script>
 
+        {/* 2. loader ufficiale */}
+        <Script
+          id="iubenda-loader"
+          src="https://cdn.iubenda.com/cs/iubenda_cs.js"
+          strategy="beforeInteractive"
+        />
+        {/* ─────────────────────────────────────────────── */}
       </body>
     </html>
   );
