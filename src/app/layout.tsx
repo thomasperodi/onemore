@@ -1,5 +1,4 @@
 /* app/layout.tsx */
-
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/styles/globals.css";
@@ -32,40 +31,36 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Footer />
         </div>
 
-        {/* ─────────── IUBENDA COOKIE SOLUTION ─────────── */}
-        {/* 1) Configurazione INLINE – eseguita PRIMA di caricamento libreria */}
+        {/* ─── IUBENDA COOKIE SOLUTION ─── */}
+        {/* 1) config diretta su window._iub.csConfiguration */}
         <Script id="iubenda-config" strategy="beforeInteractive">
           {`
-            window._iub = window._iub || [];
-            window._iub.push({
-              csConfiguration: {
-                siteId: 4005541,
-                cookiePolicyId: 37922822,
-                lang: "it",
-                banner: {
-                  acceptButtonDisplay: true,
-                  customizeButtonDisplay: true,
-                  position: "bottom"
-                },
-                invalidateConsentOnStorageMismatch: false,
-                enableTcf: false,
-                askConsentAtCookiePolicyUpdate: true,
-                perPurposeConsent: true,
-                cookiePolicyOnly: false,
-                skipSaveConsentWidget: false
-              }
-            });
+            window._iub = window._iub || {};
+            window._iub.csConfiguration = {
+              siteId: 4005541,
+              cookiePolicyId: 37922822,
+              lang: "it",
+              banner: {
+                acceptButtonDisplay: true,
+                customizeButtonDisplay: true,
+                position: "bottom"
+              },
+              invalidateConsentOnStorageMismatch: false,
+              enableTcf: false,
+              askConsentAtCookiePolicyUpdate: true,
+              perPurposeConsent: true,
+              cookiePolicyOnly: false
+            };
           `}
         </Script>
 
-        {/* 2) Loader ufficiale da CDN – dopo la config */}
+        {/* 2) loader ufficiale da CDN */}
         <Script
           id="iubenda-loader"
           src="https://cdn.iubenda.com/cs/iubenda_cs.js"
           strategy="beforeInteractive"
         />
-        {/* ─────────────────────────────────────────────── */}
-
+        {/* ──────────────────────────────── */}
       </body>
     </html>
   );
