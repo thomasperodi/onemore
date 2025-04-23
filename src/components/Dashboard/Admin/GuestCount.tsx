@@ -9,8 +9,10 @@ async function getGuestCount(): Promise<{ totale_ospiti: number; ospiti_entrati:
     if (!res.ok) return null;
 
     const data = await res.json();
-    return { 
-      totale_ospiti: data.totale_ospiti, 
+    
+    // Verifica che entrambi i campi siano presenti
+    return {
+      totale_ospiti: data.totale_ospiti || 0  // Usa 0 se non c'è il dato
     };
   } catch {
     return null;
@@ -44,7 +46,7 @@ const GuestCount = async () => {
       <div>
         <h3 className="text-lg font-semibold text-gray-700">Clienti in lista</h3>
         <p className="text-2xl font-bold text-gray-900">
-          {totale_ospiti}
+          {totale_ospiti} 
         </p>
       </div>
     </div>
