@@ -4,7 +4,7 @@ import "@/styles/globals.css";
 import Footer from "@/components/landing/Footer";
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import IubendaScript from "@/components/IubendaScript";
+import IubendaInlineScript from "@/components/IubendaInlineScript";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -39,7 +39,7 @@ export default function RootLayout({
         </div>
 
         
-        <IubendaScript />
+        <IubendaInlineScript />
       </body>
     </html>
   );
