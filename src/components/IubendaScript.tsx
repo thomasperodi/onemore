@@ -14,6 +14,7 @@ export default function IubendaScript() {
         lang: "it",
         siteId: 4005541,
         cookiePolicyId: 37922822,
+        cookieDomain: window.location.hostname,
         banner: {
           acceptButtonDisplay: true,
           customizeButtonDisplay: true,
