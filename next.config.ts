@@ -15,31 +15,30 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        // Applica a tutte le pagine
         source: "/:path*",
         headers: [
           {
             key: "Content-Security-Policy",
             value: [
-              // fallback per font/img/file ecc.
+              // default
               "default-src 'self';",
 
-              // permetti inline-script (Next.js inline config) e loader Iubenda
-              "script-src 'self' 'unsafe-inline' https://cdn.iubenda.com https://onemore-delta.vercel.app;",
+              // script inline (Next) + loader e config Iubenda + altri host Iubenda
+              "script-src 'self' 'unsafe-inline' https://cdn.iubenda.com https://cs.iubenda.com https://onemore-delta.vercel.app;",
 
-              // per sicurezza, esplicita anche script-src-elem
-              "script-src-elem 'self' 'unsafe-inline' https://cdn.iubenda.com https://onemore-delta.vercel.app;",
+              // esplicita script-src-elem per evitare fallback ambiguo
+              "script-src-elem 'self' 'unsafe-inline' https://cdn.iubenda.com https://cs.iubenda.com https://onemore-delta.vercel.app;",
 
-              // stili inline (Next font, Iubenda core-it.js)
+              // stile inline (Next fonts, Iubenda core-it.js)
               "style-src 'self' 'unsafe-inline';",
 
-              // font via data:URI (Next Font)
+              // font base64
               "font-src 'self' data:;",
 
               // connessioni per salvataggio consenso (IndexedDB)
               "connect-src 'self' https://idb.iubenda.com;",
 
-              // immagini inline o da CDN
+              // immagini
               "img-src 'self' data: https://cdn.iubenda.com;",
             ].join(" "),
           },
