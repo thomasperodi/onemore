@@ -47,17 +47,18 @@ export default function RootLayout({
         lang: "it",
         siteId: 4005541,
         cookiePolicyId: 37922822,
-        cookieDomain: ".onemore-delta.vercel.app",
+        cookieDomain: location.hostname.replace(/^www\\./,''),
         banner: {
           acceptButtonDisplay: true,
           customizeButtonDisplay: true,
           position: "bottom"
         },
-        invalidateConsentOnStorageMismatch: true,
-        enableTcf: true,
+        invalidateConsentOnStorageMismatch: false,
+        enableTcf: false,
         askConsentAtCookiePolicyUpdate: true,
         perPurposeConsent: true,
-        cookiePolicyOnly: false
+        cookiePolicyOnly: false,
+        skipSaveConsentWidget: false,
       };
     `,
   }}
