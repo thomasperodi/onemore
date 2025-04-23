@@ -18,8 +18,8 @@ const Footer = () => {
         <div>
           <h3 className="text-lg font-semibold mb-4">Link Utili</h3>
           <ul className="space-y-3">
-            <li><Link href="/privacy" className="hover:text-purple-300 transition">Privacy Policy</Link></li>
-            <li><Link href="/cookie" className="hover:text-purple-300 transition">Cookie Policy</Link></li>
+            <li><Link href="https://www.iubenda.com/privacy-policy/37922822"  target="_blank" rel="noopener noreferrer" className="hover:text-purple-300 transition">Privacy Policy</Link></li>
+            <li><Link href="https://www.iubenda.com/privacy-policy/37922822/cookie-policy" target="_blank" rel="noopener noreferrer" className="hover:text-purple-300 transition">Cookie Policy</Link></li>
           </ul>
         </div>
 

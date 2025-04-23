@@ -24,7 +24,9 @@ input, textarea, select {
   background-color: white !important;
   color: black !important;
 }
-
+.iub__us-widget {
+  display: none !important;
+}
 html,
 body {
   max-width: 100vw;

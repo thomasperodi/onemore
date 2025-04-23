@@ -4,6 +4,7 @@ import "@/styles/globals.css";
 import Footer from "@/components/landing/Footer";
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import IubendaScript from "@/components/IubendaScript";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -25,9 +26,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="it">
+      
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <Analytics/>
+        <IubendaScript/>
         
         <div className="flex flex-col min-h-screen">
           <main className="flex-grow">{children}<SpeedInsights/></main>
