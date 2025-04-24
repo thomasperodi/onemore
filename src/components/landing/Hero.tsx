@@ -4,10 +4,11 @@ import { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import Image from "next/image";
+import Link from "next/link";
+
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import Link from "next/link";
 
 const slides = [
   { src: "/images/BelloFigo.jpg", alt: "Bello Figo" },
@@ -27,23 +28,12 @@ const Hero = () => {
   const [eventoAttivo, setEventoAttivo] = useState(false);
 
   useEffect(() => {
-    const fetchEventStatus = async () => {
-      try {
-        const response = await fetch("/api/active-event");
-        const data = await response.json();
-        console.log("Dati evento:", data); // Vedi che i dati sono corretti
-    
-        // Assicurati che l'evento abbia una data e che sia valida
-        if (data?.length > 0) 
-          setEventoAttivo(true);
-      } catch (error) {
-        console.error("Errore nel recupero dell'evento attivo:", error);
-      }
-    };
-    
-    
-
-    fetchEventStatus();
+    fetch("/api/active-event")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) setEventoAttivo(true);
+      })
+      .catch((err) => console.error("Errore evento attivo:", err));
   }, []);
 
   return (
@@ -52,36 +42,20 @@ const Hero = () => {
         modules={[Autoplay, Pagination, Navigation]}
         spaceBetween={0}
         slidesPerView={1}
-        loop={true}
-        autoplay={{ delay: 5000, disableOnInteraction: false }}
+        loop
+        autoplay={{ delay: 5000 }}
         pagination={{ clickable: true }}
         className="w-full h-full"
       >
         {slides.map((slide, index) => (
           <SwiperSlide key={index}>
-            <div className="relative w-full h-[500px] md:h-[80vh] lg:h-[90vh] flex flex-col items-center justify-center text-center">
-              {/* Background Image */}
-              <Image
-                src={slide.src}
-                alt={slide.alt}
-                fill
-                priority={index === 0}
-                className="object-cover"
-              />
-
-              {/* Overlay per migliorare la leggibilità */}
+            <div className="relative w-full h-full flex items-center justify-center text-center">
+              <Image src={slide.src} alt={slide.alt} fill className="object-cover" priority={index === 0} />
               <div className="absolute inset-0 bg-black/50" />
-
-              {/* Bottone per la lista */}
               {eventoAttivo && (
-                <div className="relative z-10">
-                  <Link 
-                    href="/lista"
-                    className="mt-6 px-6 py-3 bg-purple-600 text-white text-lg font-semibold rounded hover:bg-purple-800 transition inline-block"
-                  >
-                    Mettiti in lista
-                  </Link>
-                </div>
+                <Link href="/lista" className="relative z-10 mt-6 px-6 py-3 bg-purple-600 text-white text-lg font-semibold rounded hover:bg-purple-800 transition">
+                  Mettiti in lista
+                </Link>
               )}
             </div>
           </SwiperSlide>

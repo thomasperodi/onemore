@@ -3,6 +3,10 @@
 import { useState } from "react";
 import axios from "axios";
 import { PlusCircle, Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/Button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const GestioneEventi = () => {
   const [nome, setNome] = useState("");
@@ -24,8 +28,6 @@ const GestioneEventi = () => {
 
     try {
       setLoading(true);
-      let locandinaUrl = "";
-
       const formData = new FormData();
       formData.append("file", locandina);
 
@@ -33,7 +35,7 @@ const GestioneEventi = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      locandinaUrl = uploadResponse.data.fileUrl;
+      const locandinaUrl = uploadResponse.data.fileUrl;
 
       await axios.post("/api/admin/eventi", {
         nome: nome.trim(),
@@ -57,60 +59,49 @@ const GestioneEventi = () => {
   };
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-2 w-full max-w-6xl mx-auto mb-4">
-      <h3 className="text-lg font-semibold text-gray-700 mb-2 text-center">Aggiungi Evento</h3>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-        <input
-          type="text"
-          className="p-2 border text-sm rounded w-full"
+    <Card className="w-full max-w-4xl mx-auto mb-4">
+      <CardHeader className="text-center text-lg font-semibold">Aggiungi Evento</CardHeader>
+      <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Input
           placeholder="Nome evento"
           value={nome}
           onChange={(e) => setNome(e.target.value)}
         />
-        <input
+        <Input
           type="datetime-local"
-          className="p-2 border text-sm rounded w-full"
           value={data}
           onChange={(e) => setData(e.target.value)}
         />
-        <input
-          type="text"
-          className="p-2 border text-sm rounded w-full"
+        <Input
           placeholder="Indirizzo evento"
           value={indirizzo}
           onChange={(e) => setIndirizzo(e.target.value)}
         />
-        <input
+        <Input
           type="file"
-          className="p-2 border text-sm rounded w-full"
           accept="image/*"
           onChange={(e) => setLocandina(e.target.files ? e.target.files[0] : null)}
         />
-      </div>
-
-      <button
-        onClick={handleAddEvento}
-        disabled={loading}
-        className={`w-full flex items-center justify-center gap-2 text-sm text-white rounded-md p-2 transition ${
-          loading ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
-        }`}
-      >
-        {loading ? <Loader2 className="animate-spin" size={18} /> : <PlusCircle size={18} />}
-        {loading ? "Aggiungendo..." : "Aggiungi Evento"}
-      </button>
-
-      {error && (
-        <div className="text-red-600 text-sm text-center bg-red-100 border border-red-300 rounded p-2 mt-2">
-          {error}
-        </div>
-      )}
-      {success && (
-        <div className="text-green-600 text-sm text-center bg-green-100 border border-green-300 rounded p-2 mt-2">
-          {success}
-        </div>
-      )}
-    </div>
+        <Button
+          className="col-span-full"
+          onClick={handleAddEvento}
+          disabled={loading}
+        >
+          {loading ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <PlusCircle className="mr-2 h-4 w-4" />}
+          {loading ? "Aggiungendo..." : "Aggiungi Evento"}
+        </Button>
+        {error && (
+          <Alert variant="destructive" className="col-span-full">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+        {success && (
+          <Alert variant="default" className="col-span-full">
+            <AlertDescription>{success}</AlertDescription>
+          </Alert>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 
