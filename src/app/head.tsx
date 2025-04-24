@@ -1,37 +1,47 @@
 // app/head.tsx
-import Script from "next/script";
-
 export default function Head() {
-  return (
-    <>
-      {/* 1) Configurazione Iubenda: inline, PRIMA di qualsiasi altro JS */}
-      <Script id="iubenda-config" strategy="beforeInteractive">
-        {`
-          window._iub = window._iub || {};
-          window._iub.csConfiguration = {
-            siteId: 4005541,
-            cookiePolicyId: 37922822,
-            lang: "it",
-            banner: {
-              acceptButtonDisplay: true,
-              customizeButtonDisplay: true,
-              position: "bottom"
-            },
-            invalidateConsentOnStorageMismatch: false,
-            enableTcf: false,
-            askConsentAtCookiePolicyUpdate: true,
-            perPurposeConsent: true,
-            cookiePolicyOnly: false
-          };
-        `}
-      </Script>
-
-      {/* 2) Loader ufficiale Iubenda da CDN */}
-      <Script
-        id="iubenda-cs"
-        src="https://cdn.iubenda.com/cs/iubenda_cs.js"
-        strategy="beforeInteractive"
-      />
-    </>
-  );
-}
+    return (
+      <>
+        {/* 1) Configurazione – DEVE girare prima del loader */}
+        <script
+          id="iubenda-cs-config"
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Mettiamo tutto su window in modo sicuro
+              window._iub = window._iub || [];
+              window._iub.csConfiguration = {
+                cookiePolicyId: 37922822,
+                siteId:         4005541,
+  
+                // flag di test
+                enableRemoteConsent: false,
+                invalidateConsentWithoutLog: true,
+                skipSaveConsent: true,
+                consentOnContinuedBrowsing: false,
+  
+                lang: "it",
+                banner: {
+                  position:            "bottom",
+                  backgroundColor:     "#fff",
+                  textColor:           "#000",
+                  acceptButtonDisplay: true,
+                  acceptButtonColor:   "#4EA1D3",
+                  acceptButtonCaption: "Accetta",
+                  rejectButtonDisplay: true,
+                  rejectButtonColor:   "#aaa",
+                  rejectButtonCaption: "Rifiuta"
+                }
+              };
+            `,
+          }}
+        />
+  
+        {/* 2) Loader – IL vero script di iubenda */}
+        <script
+          src="https://cdn.iubenda.com/cs/iubenda_cs.js"
+          defer
+        />
+      </>
+    );
+  }
+  

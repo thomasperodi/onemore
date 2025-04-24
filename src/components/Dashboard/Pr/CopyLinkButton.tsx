@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Button from "@/components/ui/Button";
+import {Button} from "@/components/ui/Button";
 import { ClipboardCopy, CheckCircle } from "lucide-react";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 
