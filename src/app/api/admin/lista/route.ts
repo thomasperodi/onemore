@@ -85,7 +85,7 @@ export async function PATCH(req: Request) {
     }
 
     let timestamp: string | null = null;
-    let incasso: number | null = null;
+    let incasso: number = 0;
 
     if (ingresso) {
       timestamp = new Date().toLocaleString("sv-SE", { timeZone: "Europe/Rome" }); // esempio: 2025-04-17T20:15:00

@@ -79,6 +79,8 @@ const ListaOspiti = () => {
   const paginatedOspiti = filteredOspiti.slice(currentPage * ITEMS_PER_PAGE, (currentPage + 1) * ITEMS_PER_PAGE);
 
   const handleCheckIn = async (id: number, ingresso: boolean) => {
+    if (ingresso && !window.confirm("Sei sicuro di voler annullare l'ingresso?")) return;
+
     try {
       const timestamp = ingresso ? null : new Date().toLocaleString("sv-SE", { timeZone: "Europe/Rome" });
 
@@ -134,26 +136,24 @@ const ListaOspiti = () => {
                     <td className="p-2">{ospite.cognome_utente}</td>
                     <td className="p-2">{ospite.pr ? `${ospite.pr.nome} ${ospite.pr.cognome}` : "N/A"}</td>
                     <td className="p-2">
-  <span
-    className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium
-      ${ospite.ingresso ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"}`}
-  >
-    {ospite.ingresso ? <CheckCircle size={14} /> : <XCircle size={14} />}
-    {ospite.ingresso ? "Entrato" : "Non entrato"}
-  </span>
-</td>
-<td className="p-2">
-  <button
-    onClick={() => handleCheckIn(ospite.id, ospite.ingresso)}
-    className={`flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md transition
-      ${ospite.ingresso
-        ? "bg-red-600 hover:bg-red-700 focus:ring-2 focus:ring-red-300"
-        : "bg-green-600 hover:bg-green-700 focus:ring-2 focus:ring-green-300"} text-white`}
-  >
-    {ospite.ingresso ? <XCircle size={14} /> : <CheckCircle size={14} />}
-    {ospite.ingresso ? "Annulla" : "Conferma"}
-  </button>
-</td>
+                      <span
+                        className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium
+                          ${ospite.ingresso ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"}`}
+                      >
+                        {ospite.ingresso ? <CheckCircle size={14} /> : <XCircle size={14} />}
+                        {ospite.ingresso ? "Entrato" : "Non entrato"}
+                      </span>
+                    </td>
+                    <td className="p-2">
+                      <button
+                        onClick={() => handleCheckIn(ospite.id, ospite.ingresso)}
+                        className="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md transition
+                          bg-gray-200 hover:bg-gray-300 text-gray-800"
+                      >
+                        {ospite.ingresso ? <XCircle size={14} /> : <CheckCircle size={14} />}
+                        {ospite.ingresso ? "Annulla" : "Conferma"}
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -168,23 +168,20 @@ const ListaOspiti = () => {
                   <h4 className="font-bold text-gray-800">{ospite.nome_utente} {ospite.cognome_utente}</h4>
                   <span className="text-xs text-gray-500">{ospite.pr ? `PR: ${ospite.pr.nome} ${ospite.pr.cognome}` : "N/A"}</span>
                   <span
-  className={`inline-flex items-center gap-1 px-2 py-1 mt-1 rounded-full text-xs font-medium w-fit
-    ${ospite.ingresso ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"}`}
->
-  {ospite.ingresso ? <CheckCircle size={14} /> : <XCircle size={14} />}
-  {ospite.ingresso ? "Entrato" : "Non entrato"}
-</span>
-
-<button
-  onClick={() => handleCheckIn(ospite.id, ospite.ingresso)}
-  className={`flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md transition
-    ${ospite.ingresso
-      ? "bg-red-600 hover:bg-red-700 focus:ring-2 focus:ring-red-300"
-      : "bg-green-600 hover:bg-green-700 focus:ring-2 focus:ring-green-300"} text-white`}
->
-  {ospite.ingresso ? <XCircle size={14} /> : <CheckCircle size={14} />}
-  {ospite.ingresso ? "Annulla" : "Conferma"}
-</button>
+                    className={`inline-flex items-center gap-1 px-2 py-1 mt-1 rounded-full text-xs font-medium w-fit
+                      ${ospite.ingresso ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"}`}
+                  >
+                    {ospite.ingresso ? <CheckCircle size={14} /> : <XCircle size={14} />}
+                    {ospite.ingresso ? "Entrato" : "Non entrato"}
+                  </span>
+                </div>
+                <button
+                  onClick={() => handleCheckIn(ospite.id, ospite.ingresso)}
+                  className="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md bg-gray-200 hover:bg-gray-300 text-gray-800 transition"
+                >
+                  {ospite.ingresso ? <XCircle size={14} /> : <CheckCircle size={14} />}
+                  {ospite.ingresso ? "Annulla" : "Conferma"}
+                </button>
               </div>
             ))}
           </div>
