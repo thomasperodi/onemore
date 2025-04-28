@@ -132,21 +132,31 @@ export async function PUT(req: Request) {
 
     const { id, nome, data, locandina, attivo, indirizzo } = body;
 
-    if (!id || !nome || !data || !locandina || !indirizzo) {
-      console.warn("⚠️ Campi mancanti per update:", { id, nome, data, locandina, indirizzo });
-      return NextResponse.json({ error: "Tutti i campi sono obbligatori" }, { status: 400 });
+    if (!id) {
+      console.warn("⚠️ Campo id mancante per update:", { id });
+      return NextResponse.json({ error: "Il campo id è obbligatorio" }, { status: 400 });
     }
 
-    const indirizzoFormattato = formatIndirizzo(indirizzo);
+    const updateData: Partial<{ nome: string; data: string; indirizzo: string; attivo: boolean; locandina: string }> = {};
+
+    if (nome) updateData.nome = nome;
+    if (data) updateData.data = data;
+    if (indirizzo) updateData.indirizzo = formatIndirizzo(indirizzo);
+    if (attivo !== undefined) updateData.attivo = attivo;
+    if (locandina) updateData.locandina = locandina;
+
+    if (Object.keys(updateData).length === 0) {
+      return NextResponse.json({ error: "Nessun dato da aggiornare" }, { status: 400 });
+    }
 
     const { error } = await supabase
       .from("eventi")
-      .update({ nome, data, locandina, attivo, indirizzo: indirizzoFormattato })
+      .update(updateData)
       .eq("id", id);
 
     if (error) {
       console.error("❌ Errore aggiornamento evento:", error.message);
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      return NextResponse.json({ error: `Errore nel salvataggio: ${error.message}` }, { status: 400 });
     }
 
     console.log("✅ Evento aggiornato con successo");
@@ -154,10 +164,11 @@ export async function PUT(req: Request) {
   } catch (e: unknown) {
     if (e instanceof Error) {
       console.error("🔥 Errore generale PUT:", e.message);
+      return NextResponse.json({ error: `Errore generale: ${e.message}` }, { status: 500 });
     } else {
       console.error("🔥 Errore generale PUT:", e);
+      return NextResponse.json({ error: "Errore interno nel server" }, { status: 500 });
     }
-    return NextResponse.json({ error: "Errore interno nel server" }, { status: 500 });
   }
 }
 
