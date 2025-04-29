@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
-// Non serve specificare manualmente il tipo di params, Next.js lo gestisce
-export async function GET(request: Request, { params }: { params: { [key: string]: string } }) {
-  const { id } = params;
+// Funzione per la gestione della route
+export async function GET(request: Request, { params }: { params: { id: string } }) {
+  // Aspettiamo che params venga risolto
+  const { id } = await params;
 
   // Recupera il singolo evento tramite Supabase
   const { data: event, error } = await supabase
