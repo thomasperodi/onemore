@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
-// Funzione per la gestione della route
-export async function GET(request: Request, { params }: { params: { id: string } }) {
-  // Aspettiamo che params venga risolto
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
   // Recupera il singolo evento tramite Supabase
