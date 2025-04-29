@@ -1,13 +1,7 @@
-
-
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
-interface Params {
-  params: { id: string };
-}
-
-export async function GET(request: Request, { params }: Params) {
+export async function GET(request: Request, { params }: { params: { id: string } }) {
   const { id } = params;
 
   // Recupera il singolo evento tramite Supabase
