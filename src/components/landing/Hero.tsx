@@ -1,10 +1,8 @@
 "use client";
-
-import { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import Image from "next/image";
-import Link from "next/link";
+
 
 import "swiper/css";
 import "swiper/css/pagination";
@@ -25,16 +23,7 @@ const slides = [
 ];
 
 const Hero = () => {
-  const [eventoAttivo, setEventoAttivo] = useState(false);
 
-  useEffect(() => {
-    fetch("/api/active-event")
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) setEventoAttivo(true);
-      })
-      .catch((err) => console.error("Errore evento attivo:", err));
-  }, []);
 
   return (
     <section className="relative w-full h-[500px] md:h-[80vh] lg:h-[90vh]">
@@ -51,12 +40,7 @@ const Hero = () => {
           <SwiperSlide key={index}>
             <div className="relative w-full h-full flex items-center justify-center text-center">
               <Image src={slide.src} alt={slide.alt} fill className="object-cover" priority={index === 0} />
-              <div className="absolute inset-0 bg-black/50" />
-              {eventoAttivo && (
-                <Link href="/lista" className="relative z-10 mt-6 px-6 py-3 bg-purple-600 text-white text-lg font-semibold rounded hover:bg-purple-800 transition">
-                  Mettiti in lista
-                </Link>
-              )}
+              
             </div>
           </SwiperSlide>
         ))}

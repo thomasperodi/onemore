@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import { Calendar, MapPin, Clock } from "lucide-react";
-import EventForm from "./EventForm";
-import LinkGoogleMaps from "./EventMap";
+import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { Calendar, MapPin, Clock } from 'lucide-react';
+import EventForm from './EventForm';
+import LinkGoogleMaps from './EventMap';
 
 interface Event {
   id: number;
@@ -14,56 +14,58 @@ interface Event {
   data: string;
 }
 
-const EventCard = () => {
+interface EventCardProps {
+  eventId: string;
+}
+
+const EventCard: React.FC<EventCardProps> = ({ eventId }) => {
   const [event, setEvent] = useState<Event | null>(null);
-  const [countdown, setCountdown] = useState<string>("");
+  const [countdown, setCountdown] = useState<string>('');
 
   useEffect(() => {
-    const fetchActiveEvent = async () => {
+    const fetchEvent = async () => {
       try {
-        const response = await fetch("/api/active-event");
-        const data = await response.json();
-
-        if (data && data.length > 0) {
-          const evento = data[0];
-          setEvent(evento);
-          startCountdown(evento.data);
-
-          // Memorizza l'ID dell'evento in localStorage
-          localStorage.setItem("eventId", String(evento.id));
+        console.log('Fetching event with ID:', eventId);
+        const res = await fetch(`/api/active-event/${eventId}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data: Event | Event[] = await res.json();
+        // Se l'API ritorna un array, prendi il primo elemento
+        const evt: Event = Array.isArray(data) ? data[0] : data;
+        setEvent(evt);
+        if (evt.data) {
+          startCountdown(evt.data);
         }
-      } catch (error) {
-        console.error("Errore nel recupero dell'evento attivo:", error);
+      } catch (err) {
+        console.error('Errore fetch evento:', err);
       }
     };
-
-    fetchActiveEvent();
-  }, []);
+    fetchEvent();
+  }, [eventId]);
 
   const startCountdown = (targetTime: string) => {
     const interval = setInterval(() => {
-      const now = new Date().getTime();
+      const now = Date.now();
       const target = new Date(targetTime).getTime();
-      const distance = target - now;
-
-      if (distance <= 0) {
+      const diff = target - now;
+      if (diff <= 0) {
         clearInterval(interval);
         setCountdown("L'evento è iniziato");
         return;
       }
-
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
       setCountdown(`${days}g ${hours}h ${minutes}m ${seconds}s`);
     }, 1000);
   };
 
-  if (!event) {
-    return <p className="text-white">Caricamento evento in corso...</p>;
-  }
+  if (!event) return <p className="text-white">Caricamento evento in corso...</p>;
+
+  // Formatta data e orario via Date per evitare split su stringhe undefined
+  const d = new Date(event.data);
+  const dateStr = d.toLocaleDateString('it-IT', { day: '2-digit', month: 'long', year: 'numeric' });
+  const timeStr = d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
 
   return (
     <div className="max-w-4xl mx-auto bg-gradient-to-r from-gray-900 to-black rounded-xl overflow-hidden flex flex-col md:flex-row shadow-2xl min-h-[90vh]">
@@ -76,28 +78,26 @@ const EventCard = () => {
           className="w-full h-full object-cover"
         />
       </div>
-
       <div className="flex-1 p-6 text-white flex flex-col justify-center space-y-6">
-        <h1 className="text-4xl font-extrabold mb-4 text-pink-500 text-center md:text-left">
+        <h1 className="text-4xl font-extrabold text-pink-500 text-center md:text-left">
           {event.nome}
         </h1>
-        <div className="flex items-center gap-2 mb-2">
+        <div className="flex items-center gap-2">
           <Calendar className="w-6 h-6" />
-          <span className="text-lg">{event.data.split("T")[0]}</span>
+          <span>{dateStr}</span>
         </div>
-        <div className="flex items-center gap-2 mb-2">
+        <div className="flex items-center gap-2">
           <Clock className="w-6 h-6" />
-          <span className="text-lg">{event.data.split("T")[1].slice(0, 5)}</span>
+          <span>{timeStr}</span>
         </div>
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex items-center gap-2">
           <MapPin className="w-6 h-6" />
           <LinkGoogleMaps indirizzo={event.indirizzo} />
         </div>
-        <div className="text-2xl font-bold text-yellow-400 mb-6 text-center md:text-left">
+        <div className="text-2xl font-bold text-yellow-400">
           Countdown: {countdown}
         </div>
-
-        <EventForm />
+        <EventForm eventoId={eventId} />
       </div>
     </div>
   );

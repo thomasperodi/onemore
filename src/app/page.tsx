@@ -3,6 +3,7 @@ import Hero from '@/components/landing/Hero';
 
 import PastEvents from '@/components/landing/PastEvents';
 import AboutUs from '@/components/landing/AboutUs';
+import ActiveEvents from '@/components/landing/ActiveEvents';
 
 const LandingPage = () => {
   
@@ -17,7 +18,7 @@ const LandingPage = () => {
       <div className="py-12" />
       
       
-      
+      <ActiveEvents/>
       
       {/* Past Events Section */}
       <PastEvents />
