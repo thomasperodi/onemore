@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+// La struttura di 'params' è un oggetto con la proprietà 'id' di tipo string
+export async function GET(request: Request, { params }: { params: Record<string, string> }) {
   const { id } = params;
 
   // Recupera il singolo evento tramite Supabase
