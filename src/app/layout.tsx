@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   title: "Onemoreandfam",
   description:
     "OneMore&Fam è l'organizzazione di eventi che porta i TikToker più popolari nelle serate più esclusive, creando esperienze uniche e coinvolgenti per tutti i partecipanti.",
+  viewport: "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
