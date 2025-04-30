@@ -11,10 +11,12 @@ interface Event {
 
 async function getEvents(): Promise<Event[]> {
   try {
+    
     const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/admin/eventi-passati`, {
       cache: "no-store",
     });
-
+    
+    
     if (!res.ok) return [];
     return await res.json();
   } catch {

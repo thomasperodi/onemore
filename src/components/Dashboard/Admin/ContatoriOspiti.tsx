@@ -3,55 +3,48 @@
 import { useCallback, useEffect, useState, useTransition } from "react";
 import axios from "axios";
 
-const ContatoriOspiti = () => {
+interface Props {
+  eventoId: number | null;
+  nomeEvento: string;
+}
+
+interface EventoStats {
+  evento_id: number;
+  nome: string;
+  totale_ospiti: number;
+  ospiti_entrati: number;
+}
+
+const ContatoriOspiti = ({ eventoId, nomeEvento }: Props) => {
   const [entrati, setEntrati] = useState(0);
   const [totale, setTotale] = useState(0);
-  const [nomeEvento, setNomeEvento] = useState("Evento attivo");
-  const [idEventoAttivo, setIdEventoAttivo] = useState<number | null>(null);
   const [, startTransition] = useTransition();
 
-  const fetchNomeEvento = useCallback(async () => {
-    try {
-      const res = await fetch("/api/active-event", { cache: "no-store" });
-      const data = await res.json();
-      const evento = data[0];
-      startTransition(() => {
-        setNomeEvento(evento?.nome || "Evento attivo");
-        setIdEventoAttivo(evento?.id ?? null);
-      });
-    } catch (err) {
-      console.error("Errore nel recupero nome evento", err);
-    }
-  }, []);
-
   const fetchDati = useCallback(async () => {
-    if (idEventoAttivo === null) return;
+    if (eventoId === null) return;
 
     try {
-      const resLista = await axios.get("/api/admin/lista-evento", {
+      const res = await axios.get<EventoStats[]>("/api/admin/lista-evento", {
         headers: { "Cache-Control": "no-store" },
       });
-      const { ospiti_entrati = 0, totale_ospiti = 0 } = resLista.data;
+
+      const evento = res.data.find((e) => e.evento_id === eventoId);
+      if (!evento) return;
 
       startTransition(() => {
-        setEntrati(ospiti_entrati);
-        setTotale(totale_ospiti);
+        setEntrati(evento.ospiti_entrati);
+        setTotale(evento.totale_ospiti);
       });
     } catch (err) {
       console.error("Errore nel recupero dei contatori", err);
     }
-  }, [idEventoAttivo]);
+  }, [eventoId]);
 
   useEffect(() => {
-    fetchNomeEvento();
-  }, [fetchNomeEvento]);
-
-  useEffect(() => {
-    if (idEventoAttivo === null) return;
     fetchDati();
     const interval = setInterval(fetchDati, 5000);
     return () => clearInterval(interval);
-  }, [idEventoAttivo, fetchDati]);
+  }, [eventoId, fetchDati]);
 
   return (
     <div className="w-full max-w-md mx-auto mb-3 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg shadow flex flex-col sm:flex-row justify-between items-center text-sm">

@@ -1,8 +1,15 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { CheckCircle, Search, XCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  CheckCircle,
+  Search,
+  XCircle,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 
 interface Ospite {
   id: number;
@@ -14,28 +21,20 @@ interface Ospite {
   pr: { nome: string; cognome: string } | null;
 }
 
+interface ListaOspitiProps {
+  eventoId: number;
+  nomeEvento: string;
+}
+
 const ITEMS_PER_PAGE_MOBILE = 5;
 const ITEMS_PER_PAGE_DESKTOP = 12;
 
-const ListaOspiti = () => {
+const ListaOspiti = ({ eventoId, nomeEvento }: ListaOspitiProps) => {
   const [ospiti, setOspiti] = useState<Ospite[]>([]);
   const [search, setSearch] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
-  const [nome_evento, setNome_evento] = useState<string>("");
-  const [id_evento_attivo, setId_evento_attivo] = useState<number | null>(null);
-
-  const fetchEventoAttivo = async () => {
-    try {
-      const res = await fetch("/api/active-event");
-      const data = await res.json();
-      setNome_evento(data[0].nome);
-      setId_evento_attivo(data[0].id);
-    } catch (error) {
-      console.error("Errore nel recupero dei dati evento attivo:", error);
-    }
-  };
 
   const fetchListaOspiti = async (eventoId: number) => {
     try {
@@ -47,17 +46,10 @@ const ListaOspiti = () => {
   };
 
   useEffect(() => {
-    const init = async () => {
-      await fetchEventoAttivo();
-    };
-    init();
-  }, []);
-
-  useEffect(() => {
-    if (id_evento_attivo !== null) {
-      fetchListaOspiti(id_evento_attivo);
+    if (eventoId !== null) {
+      fetchListaOspiti(eventoId);
     }
-  }, [id_evento_attivo]);
+  }, [eventoId]);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -69,6 +61,7 @@ const ListaOspiti = () => {
   useEffect(() => {
     setCurrentPage(0);
   }, [search]);
+
 
   const filteredOspiti = ospiti.filter((ospite) =>
     `${ospite.nome_utente} ${ospite.cognome_utente}`.toLowerCase().includes(search.toLowerCase())
@@ -96,9 +89,10 @@ const ListaOspiti = () => {
     }
   };
 
+
   return (
     <div className="bg-white shadow rounded-lg p-3 w-full max-w-6xl mx-auto mt-2">
-      <h3 className="text-lg font-semibold text-gray-700 mb-2">Lista - {nome_evento}</h3>
+      <h3 className="text-lg font-semibold text-gray-700 mb-2">Lista ospiti – {nomeEvento}</h3>
 
       <div className="relative mb-2">
         <input
