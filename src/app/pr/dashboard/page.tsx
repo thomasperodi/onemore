@@ -3,7 +3,6 @@
 
 import React, { useEffect, useState } from "react";
 import DashboardLayout from "@/components/Dashboard/Pr/DashboardLayout";
-import EventHistory from "@/components/Dashboard/Pr/EventHistory";
 import CurrentEventCount from "@/components/Dashboard/Pr/CurrentEventiCount";
 import CopyLinkButton from "@/components/Dashboard/Pr/CopyLinkButton";
 import { jwtDecode, JwtPayload } from "jwt-decode";
