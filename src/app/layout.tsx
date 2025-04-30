@@ -7,6 +7,10 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import CookieBanner from '@/components/CookieBanner'
 import Cookies from 'js-cookie'
+// app/layout.tsx
+import { ViewportHeightFix } from '@/components/ViewportHeightFix';
+
+
 
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -25,7 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="it">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        
+        <ViewportHeightFix/>
 
 
         <div className="flex flex-col min-h-screen">
