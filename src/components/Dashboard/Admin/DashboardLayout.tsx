@@ -117,7 +117,7 @@ const AdminDashboardLayout = ({ children }: { children: React.ReactNode }) => {
         </motion.aside>
 
         {/* Contenuto della dashboard */}
-        <div className="p-6 flex flex-col md:flex-row md:items-start md:gap-4">
+        <div className="p-4 flex-1 overflow-y-auto md:flex-row md:items-start md:gap-4">
           {children}
         </div>
       </div>
