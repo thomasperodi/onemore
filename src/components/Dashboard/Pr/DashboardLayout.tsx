@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Home, List, Menu, LogOut } from "lucide-react";
+import { Home, List, Menu, LogOut, HistoryIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -52,6 +52,10 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
           <Link href="/pr/dashboard/list" className="flex items-center gap-3 p-3 hover:bg-blue-800 rounded-xl transition">
             <List size={22} /> Lista
           </Link>
+          <Link href="/pr/dashboard/storico" className="flex items-center gap-3 p-3 hover:bg-blue-800 rounded-xl transition">
+  <HistoryIcon size={22} /> Storico
+</Link>
+
           {/* Bottone di logout */}
           <button
             onClick={handleLogout}
@@ -88,6 +92,10 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
             <Link href="/pr/dashboard/list" className="flex items-center gap-3 p-3 hover:bg-blue-800 rounded-xl transition" onClick={() => setIsOpen(false)}>
               <List size={22} /> Lista
             </Link>
+            <Link href="/pr/dashboard/storico" className="flex items-center gap-3 p-3 hover:bg-blue-800 rounded-xl transition">
+  <HistoryIcon size={22} /> Storico
+</Link>
+
             {/* Bottone di logout per mobile */}
             <button
               onClick={() => {

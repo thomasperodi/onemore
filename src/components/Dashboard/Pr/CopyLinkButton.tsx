@@ -1,40 +1,24 @@
-import React, { useState, useEffect } from "react";
-import {Button} from "@/components/ui/Button";
-import { ClipboardCopy, CheckCircle } from "lucide-react";
-import { jwtDecode, JwtPayload } from "jwt-decode";
+"use client";
 
-interface CustomJwtPayload extends JwtPayload {
-  pr_id?: string;
+import React, { useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { ClipboardCopy, CheckCircle } from "lucide-react";
+
+interface CopyLinkButtonProps {
+  eventoId: number;
+  prId: string | null;
 }
 
-const CopyLinkButton = () => {
+const CopyLinkButton = ({ eventoId, prId }: CopyLinkButtonProps) => {
   const [copied, setCopied] = useState(false);
-  const [prId, setPrId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const getPrIdFromToken = (): string | null => {
-      try {
-        const cookies = document.cookie.split("; ");
-        const tokenCookie = cookies.find((row) => row.startsWith("token="));
-        if (!tokenCookie) return null;
-
-        const token = tokenCookie.split("=")[1];
-        const decoded = jwtDecode<CustomJwtPayload>(token);
-        return decoded.pr_id || null;
-      } catch (error) {
-        console.error("Errore nella decodifica del token:", error);
-        return null;
-      }
-    };
-
-    setPrId(getPrIdFromToken());
-  }, []);
 
   const copyToClipboard = async () => {
-    if (!prId) return;
+    if (!prId || !eventoId) return;
+
+    const link = `https://www.onemoreandfam.it/lista/${eventoId}?id_pr=${prId}`;
 
     try {
-      await navigator.clipboard.writeText(`${window.location.origin}/lista?pr_id=${prId}`);
+      await navigator.clipboard.writeText(link);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -45,7 +29,9 @@ const CopyLinkButton = () => {
   return (
     <div className="w-full flex justify-center items-center">
       <div className="bg-white p-6 rounded-lg shadow-lg text-center w-full md:w-auto">
-        <h3 className="text-lg font-semibold mb-3 text-gray-800">Condividi il tuo link</h3>
+        <h3 className="text-lg font-semibold mb-3 text-gray-800">
+          Condividi il tuo link
+        </h3>
         <Button
           aria-disabled={!prId}
           onClick={prId ? copyToClipboard : undefined}

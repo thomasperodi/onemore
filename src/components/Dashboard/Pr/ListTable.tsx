@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import {
@@ -22,55 +23,64 @@ interface ListEntry {
   ingresso: boolean;
 }
 
+interface Evento {
+  id: number;
+  nome: string;
+}
+
 const PRListTable = () => {
   const [listEntries, setListEntries] = useState<ListEntry[]>([]);
-  const [nome_evento, setNome_evento] = useState<string>("");
+  const [eventi, setEventi] = useState<Evento[]>([]);
+  const [eventoSelezionato, setEventoSelezionato] = useState<Evento | null>(null);
+  const [prId, setPrId] = useState<string | null>(null);
+
+  const getPrIdFromToken = (): string | null => {
+    try {
+      const cookies = document.cookie.split("; ");
+      const tokenCookie = cookies.find((row) => row.startsWith("token="));
+      if (!tokenCookie) return null;
+
+      const token = tokenCookie.split("=")[1];
+      const decoded = jwtDecode<CustomJwtPayload>(token);
+      return decoded.pr_id || null;
+    } catch (error) {
+      console.error("Errore nella decodifica del token:", error);
+      return null;
+    }
+  };
+
+  const fetchEventiAttivi = async () => {
+    try {
+      const res = await fetch("/api/active-event");
+      const data: Evento[] = await res.json();
+      setEventi(data);
+      if (data.length > 0) setEventoSelezionato(data[0]);
+    } catch (error) {
+      console.error("Errore nel recupero degli eventi attivi:", error);
+    }
+  };
+
+  const fetchPRList = async (eventoId: number, pr_id: string) => {
+    try {
+      const res = await fetch(`/api/pr/list?evento_id=${eventoId}&pr_id=${pr_id}`);
+      const data = await res.json();
+      setListEntries(data || []);
+    } catch (error) {
+      console.error("Errore nel recupero dei dati:", error);
+    }
+  };
 
   useEffect(() => {
-    const getPrIdFromToken = (): string | null => {
-      try {
-        const cookies = document.cookie.split("; ");
-        const tokenCookie = cookies.find((row) => row.startsWith("token="));
-        if (!tokenCookie) return null;
-
-        const token = tokenCookie.split("=")[1];
-        const decoded = jwtDecode<CustomJwtPayload>(token);
-        return decoded.pr_id || null;
-      } catch (error) {
-        console.error("Errore nella decodifica del token:", error);
-        return null;
-      }
-    };
-
-    const fetchPRList = async () => {
-      const pr_id = getPrIdFromToken();
-      if (!pr_id) {
-        console.warn("PR ID non trovato nel token.");
-        return;
-      }
-
-      try {
-        const res = await fetch(`/api/pr/list?pr_id=${pr_id}`);
-        const data = await res.json();
-        setListEntries(data || []);
-      } catch (error) {
-        console.error("Errore nel recupero dei dati:", error);
-      }
-    };
-
-    const GetNameEvent = async () => {
-      try {
-        const res = await fetch("/api/active-event");
-        const data = await res.json();
-        setNome_evento(data[0].nome);
-      } catch (error) {
-        console.error("Errore nel recupero dei dati:", error);
-      }
-    };
-
-    GetNameEvent();
-    fetchPRList();
+    const id = getPrIdFromToken();
+    setPrId(id);
+    fetchEventiAttivi();
   }, []);
+
+  useEffect(() => {
+    if (eventoSelezionato && prId) {
+      fetchPRList(eventoSelezionato.id, prId);
+    }
+  }, [eventoSelezionato, prId]);
 
   const columns = [
     {
@@ -84,13 +94,12 @@ const PRListTable = () => {
     {
       accessorKey: "ingresso",
       header: "Ingresso",
-      cell: ({ getValue }: { getValue: () => boolean }) => (
+      cell: ({ getValue }: { getValue: () => boolean }) =>
         getValue() ? (
           <CheckCircle className="text-green-500" size={20} />
         ) : (
           <XCircle className="text-red-500" size={20} />
-        )
-      ),
+        ),
     },
   ];
 
@@ -105,7 +114,30 @@ const PRListTable = () => {
 
   return (
     <div className="bg-white p-4 shadow-lg rounded-lg w-full max-w-4xl mx-auto overflow-x-auto">
-      <h2 className="text-2xl font-bold mb-4 text-center">Lista - {nome_evento}</h2>
+      <h2 className="text-2xl font-bold mb-4 text-center">
+        Lista - {eventoSelezionato?.nome || "Seleziona un evento"}
+      </h2>
+
+      {eventi.length > 1 && (
+        <div className="mb-4">
+          <select
+            className="w-full p-2 border border-gray-300 rounded text-sm"
+            value={eventoSelezionato?.id || ""}
+            onChange={(e) =>
+              setEventoSelezionato(
+                eventi.find((ev) => ev.id === Number(e.target.value)) || null
+              )
+            }
+          >
+            {eventi.map((evento) => (
+              <option key={evento.id} value={evento.id}>
+                {evento.nome}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-left text-lg">
           <thead>
@@ -141,6 +173,7 @@ const PRListTable = () => {
           </tbody>
         </table>
       </div>
+
       <div className="flex justify-between items-center mt-4">
         <button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()} className="px-4 py-2 bg-gray-300 rounded">
           Precedente

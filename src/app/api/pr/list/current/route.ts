@@ -5,48 +5,26 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const pr_id = searchParams.get("pr_id");
+    const evento_id = searchParams.get("evento_id");
 
-    if (!pr_id) {
-      return NextResponse.json({ error: "PR ID is required" }, { status: 400 });
+    if (!pr_id || !evento_id) {
+      return NextResponse.json({ error: "PR ID ed Evento ID sono richiesti" }, { status: 400 });
     }
 
-    console.log("PR ID ricevuto:", pr_id);
-
-    // Recupera l'evento attivo
-    const { data: eventoAttivo, error: eventoError } = await supabase
-      .from("eventi")
-      .select("id")
-      .eq("attivo", true)
-      .maybeSingle();
-
-    if (eventoError) {
-      console.error("Errore nel recupero dell'evento attivo:", eventoError);
-      return NextResponse.json({ error: eventoError.message }, { status: 500 });
-    }
-
-    if (!eventoAttivo) {
-      return NextResponse.json({ error: "Nessun evento attivo trovato" }, { status: 404 });
-    }
-
-    console.log("Evento attivo trovato:", eventoAttivo);
-
-    // Conta le persone in lista per l'evento attivo e per il PR specifico
-    const { count, error: listaError } = await supabase
+    const { count, error } = await supabase
       .from("lista")
       .select("*", { count: "exact", head: true })
-      .eq("evento_id", eventoAttivo.id)
+      .eq("evento_id", evento_id)
       .eq("pr_id", pr_id);
 
-    if (listaError) {
-      console.error("Errore nel conteggio delle persone in lista:", listaError);
-      return NextResponse.json({ error: listaError.message }, { status: 500 });
+    if (error) {
+      console.error("Errore conteggio lista:", error);
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    console.log("Numero di persone trovate:", count);
-
     return NextResponse.json({ count: count || 0 });
-  } catch (error) {
-    console.error("Errore generico:", error);
+  } catch (err) {
+    console.error("Errore generico:", err);
     return NextResponse.json({ error: "Errore interno del server" }, { status: 500 });
   }
 }

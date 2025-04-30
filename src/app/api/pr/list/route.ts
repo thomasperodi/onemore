@@ -1,37 +1,20 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { NextRequest } from 'next/server';
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const pr_id = searchParams.get("pr_id");
+    const evento_id = searchParams.get("evento_id");
 
-    if (!pr_id) {
-      return NextResponse.json({ error: "PR ID is required" }, { status: 400 });
+    if (!pr_id || !evento_id) {
+      return NextResponse.json({ error: "PR ID ed Evento ID sono obbligatori" }, { status: 400 });
     }
 
-    // Recupera l'evento attivo
-    const { data: eventoAttivo, error: eventoError } = await supabase
-      .from("eventi")
-      .select("id")
-      .eq("attivo", true)
-      .maybeSingle();
-
-    if (eventoError) {
-      console.error("Errore nel recupero dell'evento attivo:", eventoError);
-      return NextResponse.json({ error: eventoError.message }, { status: 500 });
-    }
-
-    if (!eventoAttivo) {
-      return NextResponse.json({ error: "Nessun evento attivo trovato" }, { status: 404 });
-    }
-
-    // Recupera i nomi nella lista per il PR e l'evento attivo
     const { data: lista, error: listaError } = await supabase
       .from("lista")
       .select("id, nome_utente, cognome_utente, ingresso, orario_ingresso")
-      .eq("evento_id", eventoAttivo.id)
+      .eq("evento_id", evento_id)
       .eq("pr_id", pr_id);
 
     if (listaError) {
