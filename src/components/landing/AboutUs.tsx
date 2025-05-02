@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 
 const AboutUs = () => {
@@ -10,10 +9,10 @@ const AboutUs = () => {
           Chi Siamo
         </h2>
         <p className="text-lg md:text-2xl leading-relaxed animate-fade-in-up delay-100 text-gray-200">
-          OnemoreAndFam è il cuore pulsante degli eventi estivi a Pontenure, regalando esperienze indimenticabili presso Cala More. Con la presenza di celebri tiktoker, ogni serata è un mix perfetto di musica, divertimento e incontri speciali.
+          OnemoreAndFam è il cuore pulsante degli eventi estivi nella provincia di Piacenza, con appuntamenti imperdibili al Paradise di Piacenza e alla piscina di San Nicolò (Cala More). Ogni serata è arricchita dalla presenza di celebri tiktoker, creando un mix perfetto di musica, divertimento e incontri speciali.
         </p>
         <p className="text-lg md:text-2xl leading-relaxed animate-fade-in-up delay-200 text-gray-200">
-          Dai pool party esclusivi a eventi con influencer e DJ rinomati, OnemoreAndFam trasforma ogni notte estiva in un momento unico da vivere e condividere.
+          Dai pool party esclusivi agli eventi con influencer e DJ rinomati, OnemoreAndFam trasforma ogni notte estiva in un’esperienza unica da vivere e condividere.
         </p>
         <div className="flex flex-col md:flex-row justify-center items-center gap-6 animate-fade-in-up delay-300">
           <Link href="#contact" className="px-10 py-4 bg-gradient-to-r from-pink-500 to-purple-700 text-xl font-semibold rounded-full shadow-lg hover:scale-105 transition-transform duration-300">
@@ -27,7 +26,6 @@ const AboutUs = () => {
           <p>
             <strong>Vivi l&apos;estate con OnemoreAndFam</strong>
           </p>
-            
         </div>
       </div>
     </section>
