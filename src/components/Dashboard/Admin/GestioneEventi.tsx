@@ -7,12 +7,14 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Label } from "@/components/ui/label";
 
 const GestioneEventi = () => {
   const [nome, setNome] = useState("");
   const [data, setData] = useState("");
   const [locandina, setLocandina] = useState<File | null>(null);
   const [indirizzo, setIndirizzo] = useState("");
+  const [modalitaCalcolo, setModalitaCalcolo] = useState("Paradise");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -21,7 +23,7 @@ const GestioneEventi = () => {
     setError(null);
     setSuccess(null);
 
-    if (!nome.trim() || !data || !locandina || !indirizzo.trim()) {
+    if (!nome.trim() || !data || !locandina || !indirizzo.trim() || !modalitaCalcolo) {
       setError("Compila tutti i campi.");
       return;
     }
@@ -42,6 +44,7 @@ const GestioneEventi = () => {
         data,
         locandina: locandinaUrl,
         indirizzo: indirizzo.trim(),
+        modalita_calcolo: modalitaCalcolo,
       });
 
       setSuccess("Evento aggiunto con successo 🎉");
@@ -49,6 +52,7 @@ const GestioneEventi = () => {
       setData("");
       setIndirizzo("");
       setLocandina(null);
+      setModalitaCalcolo("Paradise");
 
       setTimeout(() => setSuccess(null), 5000);
     } catch {
@@ -82,6 +86,19 @@ const GestioneEventi = () => {
           accept="image/*"
           onChange={(e) => setLocandina(e.target.files ? e.target.files[0] : null)}
         />
+
+        <div className="col-span-full">
+          <Label className="block mb-1">Modalità di Calcolo</Label>
+          <select
+            value={modalitaCalcolo}
+            onChange={(e) => setModalitaCalcolo(e.target.value)}
+            className="w-full rounded border p-2"
+          >
+            <option value="Paradise">Paradise</option>
+            <option value="Cala More">Cala More</option>
+          </select>
+        </div>
+
         <Button
           className="col-span-full"
           onClick={handleAddEvento}
@@ -90,6 +107,7 @@ const GestioneEventi = () => {
           {loading ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <PlusCircle className="mr-2 h-4 w-4" />}
           {loading ? "Aggiungendo..." : "Aggiungi Evento"}
         </Button>
+
         {error && (
           <Alert variant="destructive" className="col-span-full">
             <AlertDescription>{error}</AlertDescription>

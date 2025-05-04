@@ -5,20 +5,23 @@ import { useParams } from "next/navigation";
 import axios from "axios";
 import Image from "next/image";
 import AdminDashboardLayout from "@/components/Dashboard/Admin/DashboardLayout";
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 interface Evento {
-  data: string | number | Date;
   id: number;
   nome: string;
   locandina: string;
+  modalita_calcolo: string;
 }
 
-interface IngressiPerPrezzo {
-  [key: number]: number;
+interface Statistiche {
+  in_lista_pre_21?: number;
+  in_lista_post_21?: number;
+  in_lista?: number;
+  fuori_lista: number;
+  incasso_totale: number;
 }
 
 const DettaglioEvento = () => {
@@ -26,39 +29,32 @@ const DettaglioEvento = () => {
   const id = useMemo(() => params?.id, [params]);
 
   const [evento, setEvento] = useState<Evento | null>(null);
-  const [ingressiPerPrezzo, setIngressiPerPrezzo] = useState<IngressiPerPrezzo>({});
-  const [caricamento, setCaricamento] = useState(true);
+  const [statistiche, setStatistiche] = useState<Statistiche | null>(null);
+  const [loading, setLoading] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
 
   useEffect(() => {
-    const fetchDettagliEvento = async () => {
+    const fetchDati = async () => {
       try {
         const { data } = await axios.get(`/api/admin/eventi/${id}`);
         setEvento(data.evento);
-        setIngressiPerPrezzo(data.ingressi_per_prezzo || {});
+        setStatistiche(data.statistiche);
       } catch (error) {
-        console.error("Errore nel caricamento dei dettagli dell'evento", error);
+        console.error("Errore caricamento dettagli evento:", error);
       } finally {
-        setCaricamento(false);
+        setLoading(false);
       }
     };
 
-    if (id) fetchDettagliEvento();
+    if (id) fetchDati();
   }, [id]);
 
-  const incassoTotale = useMemo(() => {
-    return Object.entries(ingressiPerPrezzo).reduce(
-      (total, [prezzo, ingressi]) => total + Number(prezzo) * ingressi,
-      0
-    );
-  }, [ingressiPerPrezzo]);
-
-  if (caricamento) {
-    return <p className="text-center text-gray-500 text-sm mt-4">Caricamento dettagli evento...</p>;
+  if (loading) {
+    return <p className="text-center text-sm text-gray-500 mt-4">Caricamento...</p>;
   }
 
-  if (!evento) {
-    return <p className="text-center text-red-500 text-sm mt-4">Evento non trovato.</p>;
+  if (!evento || !statistiche) {
+    return <p className="text-center text-sm text-red-500 mt-4">Evento non trovato.</p>;
   }
 
   return (
@@ -70,7 +66,6 @@ const DettaglioEvento = () => {
           </CardHeader>
 
           <CardContent className="flex flex-col items-center gap-4">
-            {/* Locandina */}
             <Image
               src={evento.locandina}
               alt={`Locandina di ${evento.nome}`}
@@ -80,47 +75,43 @@ const DettaglioEvento = () => {
               priority
             />
 
-            {/* Tabella ingressi */}
-            <div className="w-full">
-              <h2 className="text-lg font-semibold text-center mb-2">Ingressi per Prezzo</h2>
-              <div className="overflow-x-auto">
-                <table className="min-w-full text-sm text-center border border-gray-300 rounded-md shadow-sm">
-                  <thead className="bg-gray-100">
-                    <tr>
-                      <th className="py-1 px-4 border-b">Prezzo</th>
-                      <th className="py-1 px-4 border-b">Ingressi</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[10, 12, 15].map((prezzo) => (
-                      <tr key={prezzo} className="border-b">
-                        <td className="py-1 px-4">€{prezzo.toFixed(2)}</td>
-                        <td className="py-1 px-4">{ingressiPerPrezzo[prezzo] ?? 0}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+            <div className="w-full mt-4">
+              <h2 className="text-lg font-semibold text-center mb-2">Statistiche Ingressi</h2>
 
-              {/* Bottone */}
-              <Button
-                className="mt-4 w-full"
-                onClick={() => setOpenDialog(true)}
-              >
+              <table className="min-w-full text-sm text-center border border-gray-300 rounded-md shadow-sm">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="py-1 px-4 border-b">Tipo</th>
+                    <th className="py-1 px-4 border-b">Numero</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {evento.modalita_calcolo === "cala_more" ? (
+                    <>
+                      <tr><td className="py-1 px-4">In lista (prima delle 21)</td><td>{statistiche.in_lista_pre_21 ?? 0}</td></tr>
+                      <tr><td className="py-1 px-4">In lista (dopo le 21)</td><td>{statistiche.in_lista_post_21 ?? 0}</td></tr>
+                    </>
+                  ) : (
+                    <tr><td className="py-1 px-4">In lista</td><td>{statistiche.in_lista ?? 0}</td></tr>
+                  )}
+                  <tr><td className="py-1 px-4">Fuori lista</td><td>{statistiche.fuori_lista}</td></tr>
+                </tbody>
+              </table>
+
+              <Button onClick={() => setOpenDialog(true)} className="mt-4 w-full">
                 Visualizza Incasso Totale
               </Button>
             </div>
           </CardContent>
         </Card>
 
-        {/* Dialog ShadCN */}
         <Dialog open={openDialog} onOpenChange={setOpenDialog}>
           <DialogContent className="sm:max-w-sm">
             <DialogHeader>
               <DialogTitle>Incasso Totale</DialogTitle>
             </DialogHeader>
             <div className="text-center text-2xl font-bold text-gray-900">
-              €{incassoTotale.toFixed(2)}
+              €{statistiche.incasso_totale.toFixed(2)}
             </div>
           </DialogContent>
         </Dialog>

@@ -10,6 +10,8 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { toast } from "react-toastify";
+import { Button } from "@/components/ui/Button";
 
 interface Ospite {
   id: number;
@@ -88,10 +90,30 @@ const ListaOspiti = ({ eventoId, nomeEvento }: ListaOspitiProps) => {
       setError("Errore durante l'aggiornamento dello stato di ingresso");
     }
   };
+  const handleFuoriLista = async () => {
+    try {
+      await axios.post("/api/admin/fuori-lista", {
+        evento_id: eventoId,
+      });
+  
+      toast.success("Fuori lista registrato con successo.");
+      fetchListaOspiti(eventoId); // opzionale, se vuoi aggiornare dati a schermo
+    } catch (err) {
+      console.error("Errore fuori lista:", err);
+      toast.error("Errore durante la registrazione del fuori lista.");
+    }
+  };
+  
+  
+  
 
 
   return (
     <div className="bg-white shadow rounded-lg p-3 w-full max-w-6xl mx-auto mt-2">
+      <div className="mb-4 flex justify-center items-center gap-2">
+        <Button onClick={handleFuoriLista}>+1 Fuori Lista</Button>
+      </div>
+
       <h3 className="text-lg font-semibold text-gray-700 mb-2">Lista ospiti – {nomeEvento}</h3>
 
       <div className="relative mb-2">

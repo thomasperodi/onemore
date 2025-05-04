@@ -12,6 +12,7 @@ import { ToastContainer, toast } from "react-toastify"; // Importa react-toastif
 import "react-toastify/dist/ReactToastify.css"; // Importa il CSS per il toast
 
 interface Evento {
+  modalita_calcolo: string;
   locandina: string;
   id: number;
   nome: string;
@@ -34,6 +35,7 @@ const ListaEventi = () => {
   const [attivo, setAttivo] = useState(false);
   const [locandina, setLocandina] = useState<File | null>(null);
   const [caricamentoModifica, setCaricamentoModifica] = useState(false);
+  const [modalitaCalcolo, setModalitaCalcolo] = useState("Paradise");
   const perPagina = 4;
   const router = useRouter();
 
@@ -80,6 +82,7 @@ const ListaEventi = () => {
           attivo: attivo,
           indirizzo: indirizzo,
           locandina: locandina ? locandina.name : "",
+          modalita_calcolo: modalitaCalcolo,
         };
 
         const response = await axios.put(`/api/admin/eventi`, dataToSend, {
@@ -161,6 +164,7 @@ const ListaEventi = () => {
                               setData(evento.data);
                               setIndirizzo(evento.indirizzo);
                               setAttivo(evento.attivo);
+                              setModalitaCalcolo(evento.modalita_calcolo ?? "Paradise"); // fallback
                             }}
                           >
                             Modifica
@@ -242,6 +246,19 @@ const ListaEventi = () => {
                   className="col-span-3"
                 />
               </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="modalita" className="text-right">Modalità Calcolo</Label>
+              <select
+                id="modalita"
+                value={modalitaCalcolo}
+                onChange={(e) => setModalitaCalcolo(e.target.value)}
+                className="col-span-3 border rounded px-2 py-1"
+              >
+                <option value="Paradise">Paradise</option>
+                <option value="Cala More">Cala More</option>
+              </select>
+            </div>
+
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setModificaEvento(null)}>

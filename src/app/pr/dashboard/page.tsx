@@ -38,6 +38,7 @@ const DashboardPage = () => {
 
     const fetchEventi = async () => {
       try {
+        
         const res = await fetch("/api/active-event");
         const data = await res.json();
         setEventi(data);

@@ -92,10 +92,10 @@ export async function POST(req: Request) {
     const body = await req.json();
     console.log("📦 Dati ricevuti:", body);
 
-    const { nome, data, locandina, attivo, indirizzo } = body;
+    const { nome, data, locandina, attivo, indirizzo, modalita_calcolo } = body;
 
-    if (!nome || !data || !locandina || !indirizzo) {
-      console.warn("⚠️ Campi mancanti:", { nome, data, locandina, indirizzo });
+    if (!nome || !data || !locandina || !indirizzo || !modalita_calcolo) {
+      console.warn("⚠️ Campi mancanti:", { nome, data, locandina, indirizzo, modalita_calcolo });
       return NextResponse.json({ error: "Tutti i campi sono obbligatori" }, { status: 400 });
     }
 
@@ -103,7 +103,14 @@ export async function POST(req: Request) {
 
     const { error } = await supabase
       .from("eventi")
-      .insert([{ nome, data, locandina, indirizzo: indirizzoFormattato, attivo: attivo ?? true }]);
+      .insert([{
+        nome,
+        data,
+        locandina,
+        indirizzo: indirizzoFormattato,
+        attivo: attivo ?? true,
+        modalita_calcolo
+      }]);
 
     if (error) {
       console.error("❌ Errore inserimento evento:", error.message);
@@ -114,11 +121,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: "Evento creato con successo" }, { status: 201 });
   } catch (e: unknown) {
     if (e instanceof Error) {
-    console.error("🔥 Errore generale POST:", e.message);
-    return NextResponse.json({ error: "Errore interno nel server" }, { status: 500 });
+      console.error("🔥 Errore generale POST:", e.message);
+      return NextResponse.json({ error: "Errore interno nel server" }, { status: 500 });
     }
   }
 }
+
 
 /**
  * ✏️ Modifica un evento esistente
@@ -130,20 +138,23 @@ export async function PUT(req: Request) {
     const body = await req.json();
     console.log("📦 Dati aggiornamento:", body);
 
-    const { id, nome, data, locandina, attivo, indirizzo } = body;
+    const { id, nome, data, locandina, attivo, indirizzo, modalita_calcolo } = body;
 
     if (!id) {
       console.warn("⚠️ Campo id mancante per update:", { id });
       return NextResponse.json({ error: "Il campo id è obbligatorio" }, { status: 400 });
     }
 
-    const updateData: Partial<{ nome: string; data: string; indirizzo: string; attivo: boolean; locandina: string }> = {};
 
+    const updateData: Partial<{ nome: string; data: string; indirizzo: string; attivo: boolean; locandina: string; modalita_calcolo: string }> = {};
+      
     if (nome) updateData.nome = nome;
     if (data) updateData.data = data;
     if (indirizzo) updateData.indirizzo = formatIndirizzo(indirizzo);
     if (attivo !== undefined) updateData.attivo = attivo;
     if (locandina) updateData.locandina = locandina;
+    if (modalita_calcolo) updateData.modalita_calcolo = modalita_calcolo;
+
 
     if (Object.keys(updateData).length === 0) {
       return NextResponse.json({ error: "Nessun dato da aggiornare" }, { status: 400 });
