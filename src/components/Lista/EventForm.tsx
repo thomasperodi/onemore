@@ -24,7 +24,7 @@ const EventForm: React.FC<EventFormProps> = ({ eventoId }) => {
       setPrId(urlPrId);
       Cookies.set('pr_id', urlPrId, { expires: 1 });
     } else {
-      const stored = Cookies.get('pr_id') || '87e712bd-52a0-46b5-96be-ed708f8ed4ab';
+      const stored = Cookies.get('pr_id') || 'c235d718-3c9b-46ef-80b2-503c91880851';
       setPrId(stored);
       Cookies.set('pr_id', stored, { expires: 1 });
     }
