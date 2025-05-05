@@ -19,7 +19,7 @@ const EventForm: React.FC<EventFormProps> = ({ eventoId }) => {
 
   // Gestione pr_id e stato lista chiusa...
   useEffect(() => {
-    const urlPrId = searchParams.get('pr_id');
+    const urlPrId = searchParams.get('id_pr');
     if (urlPrId) {
       setPrId(urlPrId);
       Cookies.set('pr_id', urlPrId, { expires: 1 });
