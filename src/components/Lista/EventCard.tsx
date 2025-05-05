@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Calendar, MapPin, Clock } from 'lucide-react';
 import EventForm from './EventForm';
 import LinkGoogleMaps from './EventMap';
+import { useRouter } from 'next/navigation'; 
 
 interface Event {
   id: number;
@@ -12,6 +13,7 @@ interface Event {
   indirizzo: string;
   nome: string;
   data: string;
+  attivo: boolean;
 }
 
 interface EventCardProps {
@@ -21,27 +23,50 @@ interface EventCardProps {
 const EventCard: React.FC<EventCardProps> = ({ eventId }) => {
   const [event, setEvent] = useState<Event | null>(null);
   const [countdown, setCountdown] = useState<string>('');
-
+  const [eventoNonDisponibile, setEventoNonDisponibile] = useState<boolean>(false);
+  const router = useRouter();
+  
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        console.log('Fetching event with ID:', eventId);
         const res = await fetch(`/api/active-event/${eventId}`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data: Event | Event[] = await res.json();
-        // Se l'API ritorna un array, prendi il primo elemento
-        const evt: Event = Array.isArray(data) ? data[0] : data;
-        setEvent(evt);
-        if (evt.data) {
-          startCountdown(evt.data);
+        if (!res.ok) {
+          console.log(res);
+          if (res.status === 500) {
+            setEventoNonDisponibile(true);
+          }
+          throw new Error(`HTTP ${res.status}`);
         }
+
+        const data: Event | Event[] = await res.json();
+        const evt: Event = Array.isArray(data) ? data[0] : data;
+
+        if (!evt || !evt.data) {
+          setEventoNonDisponibile(true);
+          return;
+        }
+
+        setEvent(evt);
+        startCountdown(evt.data);
       } catch (err) {
         console.error('Errore fetch evento:', err);
+        setEventoNonDisponibile(true);
       }
     };
+
     fetchEvent();
   }, [eventId]);
 
+  useEffect(() => {
+    if (eventoNonDisponibile) {
+      const timeout = setTimeout(() => {
+        router.push('/'); // ✅ meglio di window.location.href
+      }, 1000);
+      
+      return () => clearTimeout(timeout);
+    }
+  }, [eventoNonDisponibile, router]);
+  
   const startCountdown = (targetTime: string) => {
     const interval = setInterval(() => {
       const now = Date.now();
@@ -60,9 +85,20 @@ const EventCard: React.FC<EventCardProps> = ({ eventId }) => {
     }, 1000);
   };
 
+  if (eventoNonDisponibile) {
+    return (
+      <div className="text-center text-white p-6">
+        <h1 className="text-3xl font-bold text-red-500">Evento non disponibile</h1>
+        <p className="mt-4 text-black text-lg">
+          Questo evento non è più attivo o non esiste. Contatta il tuo PR per un link aggiornato.
+        </p>
+        <p className="mt-2 text-sm text-gray-300 italic">Verrai reindirizzato alla home...</p>
+      </div>
+    );
+  }
+
   if (!event) return <p className="text-white">Caricamento evento in corso...</p>;
 
-  // Formatta data e orario via Date per evitare split su stringhe undefined
   const d = new Date(event.data);
   const dateStr = d.toLocaleDateString('it-IT', { day: '2-digit', month: 'long', year: 'numeric' });
   const timeStr = d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
