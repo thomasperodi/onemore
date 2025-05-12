@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Home, List, Users, CalendarDays, Menu, LogOut } from "lucide-react";
+import { Home, List, Users, CalendarDays, Menu, LogOut, UserRoundCog } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -46,6 +46,7 @@ const AdminDashboardLayout = ({ children }: { children: React.ReactNode }) => {
     { name: "Lista", href: "/admin/dashboard/list", icon: <List size={22} /> },
     { name: "Gestione PR", href: "/admin/dashboard/pr", icon: <Users size={22} /> },
     { name: "Gestione Eventi", href: "/admin/dashboard/eventi", icon: <CalendarDays size={22} /> },
+    { name: "Gestione Utenti", href: "/admin/dashboard/utenti", icon: <UserRoundCog size={22} /> },
   ];
 
   return (
