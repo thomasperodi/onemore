@@ -56,7 +56,7 @@ export default function CookieBanner() {
             <p>
               Utilizziamo i cookie per migliorare la tua esperienza di navigazione. Puoi scegliere
               quali cookie accettare. Leggi la nostra{' '}
-              <a href="/privacy" className="underline">Privacy Policy</a>.
+              <a href="https://www.iubenda.com/privacy-policy/40294398" className="underline">Privacy Policy</a>.
             </p>
 
             <div className="flex items-center justify-between pt-2">

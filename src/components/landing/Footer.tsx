@@ -21,10 +21,10 @@ const Footer = () => {
           <h3 className="text-base font-semibold mb-3">Link Utili</h3>
           <ul className="space-y-2">
             <li>
-              <Link href="https://www.iubenda.com/privacy-policy/37922822" target="_blank" rel="noopener noreferrer" className="hover:text-purple-300 transition">Privacy Policy</Link>
+              <Link href="https://www.iubenda.com/privacy-policy/40294398" target="_blank" rel="noopener noreferrer" className="hover:text-purple-300 transition">Privacy Policy</Link>
             </li>
             <li>
-              <Link href="https://www.iubenda.com/privacy-policy/37922822/cookie-policy" target="_blank" rel="noopener noreferrer" className="hover:text-purple-300 transition">Cookie Policy</Link>
+              <Link href="https://www.iubenda.com/privacy-policy/40294398/cookie-policy" target="_blank" rel="noopener noreferrer" className="hover:text-purple-300 transition">Cookie Policy</Link>
             </li>
           </ul>
         </div>
