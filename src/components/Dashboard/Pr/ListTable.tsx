@@ -109,7 +109,7 @@ const PRListTable = () => {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    initialState: { pagination: { pageSize: 9 } },
+    initialState: { pagination: { pageSize: 6 } },
   });
 
   return (
