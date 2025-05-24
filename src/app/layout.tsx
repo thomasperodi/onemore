@@ -3,13 +3,11 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/styles/globals.css";
 import Footer from "@/components/landing/Footer";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import CookieBanner from '@/components/CookieBanner'
-import Cookies from 'js-cookie'
 // app/layout.tsx
 import { ViewportHeightFix } from '@/components/ViewportHeightFix';
 import { Viewport } from "next"
+import ClientAnalytics from "@/components/ClientAnalytics";
 
 
 
@@ -31,8 +29,6 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const hasConsent = typeof window !== 'undefined' && Cookies.get('cookie-preferences')
-  const consent = hasConsent ? JSON.parse(Cookies.get('cookie-preferences')!) : null
   return (
     <html lang="it">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
@@ -43,13 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main className="flex-grow">
             {children}
             <CookieBanner />
-            {consent?.analytics && (
-
-              <>
-                <Analytics />
-                <SpeedInsights />
-              </>
-            )}
+            <ClientAnalytics />
             
           </main>
           <Footer />
