@@ -28,7 +28,9 @@ interface PRDetail {
     evento_nome: string;
     ospiti_totali: number;
     ospiti_entrati: number;
-    nomi_utenti: { nome: string; cognome: string }[];
+    nomi_utenti: {
+      ingresso: boolean; nome: string; cognome: string 
+}[];
   }[];
 }
 
@@ -136,6 +138,7 @@ export default function PRPage() {
                   <TableRow>
                     <TableHead>Nome</TableHead>
                     <TableHead>Cognome</TableHead>
+                    <TableHead>Ingresso</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -143,6 +146,13 @@ export default function PRPage() {
                     <TableRow key={i}>
                       <TableCell>{utente.nome}</TableCell>
                       <TableCell>{utente.cognome}</TableCell>
+                      <TableCell>
+                        {utente.ingresso ? (
+                          <span className="text-green-600 font-semibold">Entrato</span>
+                        ) : (
+                          <span className="text-red-600 font-semibold">Non Entrato</span>
+                        )}
+                      </TableCell> 
                     </TableRow>
                   ))}
                 </TableBody>
