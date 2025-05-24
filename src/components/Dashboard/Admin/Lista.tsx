@@ -39,13 +39,32 @@ const ListaOspiti = ({ eventoId, nomeEvento }: ListaOspitiProps) => {
   const [isMobile, setIsMobile] = useState(false);
 
   const fetchListaOspiti = async (eventoId: number) => {
-    try {
-      const response = await axios.get(`/api/admin/lista?evento_id=${eventoId}`);
-      setOspiti(response.data);
-    } catch {
-      setError("Errore nel recupero della lista ospiti");
-    }
-  };
+  const BATCH_SIZE = 1000;
+  let offset = 0;
+  let fullList: Ospite[] = [];
+  let batch: Ospite[] = [];
+
+  try {
+    do {
+      const res = await axios.get(`/api/admin/lista`, {
+        params: {
+          evento_id: eventoId,
+          offset,
+          limit: BATCH_SIZE,
+        },
+      });
+
+      batch = res.data;
+      fullList = fullList.concat(batch);
+      offset += BATCH_SIZE;
+    } while (batch.length === BATCH_SIZE);
+
+    setOspiti(fullList);
+  } catch {
+    setError("Errore nel recupero della lista ospiti");
+  }
+};
+
 
   useEffect(() => {
     if (eventoId !== null) {

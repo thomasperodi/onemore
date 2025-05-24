@@ -10,6 +10,8 @@ const supabase = createClient(
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const eventoId = searchParams.get("evento_id");
+  const offset = parseInt(searchParams.get("offset") || "0");
+  const limit = parseInt(searchParams.get("limit") || "1000");
 
   if (!eventoId) {
     return NextResponse.json({ error: "evento_id è obbligatorio" }, { status: 400 });
@@ -32,7 +34,8 @@ export async function GET(req: NextRequest) {
       )
     `)
     .eq("evento_id", eventoId)
-    .order("id", { ascending: true });
+    .order("id", { ascending: true })
+    .range(offset, offset + limit - 1);
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
@@ -40,7 +43,6 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json(data, { status: 200 });
 }
-
 
 
 // ✅ Regole incasso in base all'orario
