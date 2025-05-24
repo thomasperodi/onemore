@@ -7,19 +7,23 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import Cookies from "js-cookie";
 
 export default function ClientAnalytics() {
-  const [enabled, setEnabled] = useState(false);
+  const [consentGiven, setConsentGiven] = useState(false);
 
   useEffect(() => {
-    const consentCookie = Cookies.get("cookie-preferences");
-    if (consentCookie) {
-      const parsed = JSON.parse(consentCookie);
-      if (parsed?.analytics) {
-        setEnabled(true);
+    try {
+      const cookie = Cookies.get("cookie-preferences");
+      if (cookie) {
+        const parsed = JSON.parse(cookie);
+        if (parsed.analytics === true) {
+          setConsentGiven(true);
+        }
       }
+    } catch (e) {
+      console.error("Errore nel parsing del cookie:", e);
     }
   }, []);
 
-  if (!enabled) return null;
+  if (!consentGiven) return null;
 
   return (
     <>
