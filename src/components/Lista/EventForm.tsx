@@ -72,11 +72,13 @@ const EventForm: React.FC<EventFormProps> = ({ eventoId }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {message && (
-        <div className={`p-3 rounded-lg text-white ${message.type==='success'?'bg-green-500':'bg-red-500'}`}>
-          {message.text}
-        </div>
-      )}
+  <div className="min-h-[56px]">
+    {message && (
+      <div className={`p-3 rounded-lg text-white ${message.type==='success'?'bg-green-500':'bg-red-500'}`}>
+        {message.text}
+      </div>
+    )}
+  </div>
       <input name="nome" placeholder="Nome" required value={formData.nome}
         onChange={e => setFormData({ ...formData, nome: e.target.value })}
         disabled={listaChiusa||loading}

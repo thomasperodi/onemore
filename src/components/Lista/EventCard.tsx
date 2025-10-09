@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Calendar, MapPin, Clock } from 'lucide-react';
 import EventForm from './EventForm';
 import LinkGoogleMaps from './EventMap';
-import { useRouter } from 'next/navigation'; 
+import { useRouter } from 'next/navigation';
 
 interface Event {
   id: number;
@@ -25,13 +25,12 @@ const EventCard: React.FC<EventCardProps> = ({ eventId }) => {
   const [countdown, setCountdown] = useState<string>('');
   const [eventoNonDisponibile, setEventoNonDisponibile] = useState<boolean>(false);
   const router = useRouter();
-  
+
   useEffect(() => {
     const fetchEvent = async () => {
       try {
         const res = await fetch(`/api/active-event/${eventId}`);
         if (!res.ok) {
-          console.log(res);
           if (res.status === 500) {
             setEventoNonDisponibile(true);
           }
@@ -60,13 +59,12 @@ const EventCard: React.FC<EventCardProps> = ({ eventId }) => {
   useEffect(() => {
     if (eventoNonDisponibile) {
       const timeout = setTimeout(() => {
-        router.push('/'); // ✅ meglio di window.location.href
+        router.push('/');
       }, 1000);
-      
       return () => clearTimeout(timeout);
     }
   }, [eventoNonDisponibile, router]);
-  
+
   const startCountdown = (targetTime: string) => {
     const interval = setInterval(() => {
       const now = Date.now();
@@ -87,7 +85,7 @@ const EventCard: React.FC<EventCardProps> = ({ eventId }) => {
 
   if (eventoNonDisponibile) {
     return (
-      <div className="text-center text-white p-6">
+      <div className="text-center text-white p-6 min-h-[300px]">
         <h1 className="text-3xl font-bold text-red-500">Evento non disponibile</h1>
         <p className="mt-4 text-black text-lg">
           Questo evento non è più attivo o non esiste. Contatta il tuo PR per un link aggiornato.
@@ -97,7 +95,7 @@ const EventCard: React.FC<EventCardProps> = ({ eventId }) => {
     );
   }
 
-  if (!event) return <p className="text-white">Caricamento evento in corso...</p>;
+  if (!event) return <p className="text-white text-center py-12">Caricamento evento in corso...</p>;
 
   const d = new Date(event.data);
   const dateStr = d.toLocaleDateString('it-IT', { day: '2-digit', month: 'long', year: 'numeric' });
@@ -105,13 +103,14 @@ const EventCard: React.FC<EventCardProps> = ({ eventId }) => {
 
   return (
     <div className="max-w-4xl mx-auto bg-gradient-to-r from-gray-900 to-black rounded-xl overflow-hidden flex flex-col md:flex-row shadow-2xl min-h-[90vh]">
-      <div className="w-full h-[500px] md:w-2/5 md:h-auto">
+      <div className="relative w-full md:w-2/5 aspect-[2/3]">
         <Image
           src={event.locandina}
           alt={event.nome}
-          width={600}
-          height={900}
-          className="w-full h-full object-cover"
+          fill
+          className="object-cover rounded-t-xl md:rounded-l-xl md:rounded-tr-none"
+          sizes="(max-width: 768px) 100vw, 40vw"
+          priority
         />
       </div>
       <div className="flex-1 p-6 text-white flex flex-col justify-center space-y-6">
@@ -130,7 +129,7 @@ const EventCard: React.FC<EventCardProps> = ({ eventId }) => {
           <MapPin className="w-6 h-6" />
           <LinkGoogleMaps indirizzo={event.indirizzo} />
         </div>
-        <div className="text-2xl font-bold text-yellow-400">
+        <div className="text-2xl font-bold text-yellow-400 font-mono min-h-[2rem]">
           Countdown: {countdown}
         </div>
         <EventForm eventoId={eventId} />
