@@ -8,12 +8,19 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 items-start text-center md:text-left">
         <div id="contact">
           <h2 className="text-xl font-bold mb-2">OnemoreAndFam.</h2>
+          <h2 className="text-xl font-bold mb-2">TeenEvents</h2>
           <p className="mb-2">Organizza e partecipa agli eventi migliori con facilità!</p>
           <p className="mb-1">
             Email: <a href="mailto:onemoreandfam@gmail.com" className="underline hover:text-purple-300">onemoreandfam@gmail.com</a>
           </p>
+          <p className="mb-1">
+            Email: <a href="mailto:teeneevents@gmail.com" className="underline hover:text-purple-300">teeneevents@gmail.com</a>
+          </p>
           <p>
             Telefono: <a href="tel:+393482395186" className="underline hover:text-purple-300">+39 348 239 5186</a>
+          </p>
+          <p>
+            Telefono: <a href="tel:+393332689551" className="underline hover:text-purple-300">+39 333 268 9551</a>
           </p>
         </div>
 

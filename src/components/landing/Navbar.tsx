@@ -14,16 +14,24 @@ const Navbar = () => {
     <nav className="relative bg-[#44034f] text-white p-4 z-50 w-full flex items-center justify-between">
       {/* LOGO - TUTTO A SINISTRA */}
       <div className="flex items-center">
-        <Link href="/">
-          <Image
-            src="/images/onemoreandfam.png"
-            alt="OnemoreAndFam Logo"
-            width={180}
-            height={50}
-            priority
-          />
-        </Link>
-      </div>
+  <Link href="/" className="flex items-center space-x-1">
+    <Image
+      src="/images/onemoreandfam.png"
+      alt="OnemoreAndFam Logo"
+      width={180}
+      height={50}
+      priority
+    />
+    <Image
+      src="/images/teenevents.png"
+      alt="Teen Events Logo"
+      width={180}
+      height={50}
+      priority
+    />
+  </Link>
+</div>
+
 
       {/* NAVIGATION - CENTRATA */}
       <ul className="hidden md:flex gap-6 text-lg flex-1 justify-center">
