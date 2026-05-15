@@ -20,7 +20,7 @@ const Footer = () => {
             Telefono: <a href="tel:+393482395186" className="underline hover:text-purple-300">+39 348 239 5186</a>
           </p>
           <p>
-            Telefono: <a href="tel:+393332689551" className="underline hover:text-purple-300">+39 333 268 9551</a>
+            Telefono: <a href="tel:+393520873511" className="underline hover:text-purple-300">+39 352 087 3511</a>
           </p>
         </div>
 
