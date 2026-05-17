@@ -15,7 +15,7 @@ const CopyLinkButton = ({ eventoId, prId }: CopyLinkButtonProps) => {
   const copyToClipboard = async () => {
     if (!prId || !eventoId) return;
 
-    const link = `https://www.onemoreandfam.it/lista/${eventoId}?id_pr=${prId}`;
+    const link = `https://onemore-delta.vercel.app/lista/${eventoId}?id_pr=${prId}`;
 
     try {
       await navigator.clipboard.writeText(link);
